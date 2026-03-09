@@ -1,0 +1,25 @@
+# Notion-Integration
+
+Konfiguration fuer den `/learn`-Skill um Wissensquellen aus einer Notion-Inbox abzuholen.
+
+## Setup
+
+1. Notion-Integration erstellen: https://www.notion.so/my-integrations
+2. Datenbank-Zugriff fuer die Integration freigeben
+3. MCP-Server konfigurieren (z.B. via `~/.claude/settings.json`)
+4. Diese Datei nach `config/notion.md` kopieren und IDs eintragen
+
+## Konfiguration
+
+- **Datenbank-ID:** `DEINE-DATENBANK-ID-HIER`
+- **Project-Relation-ID:** `DEINE-PROJECT-RELATION-ID-HIER` (optional, zum Markieren verarbeiteter Items)
+- **Verarbeitet markieren:** Project=[Dein Projektname] + Type aus TYPE LIST
+- **TYPE LIST:** audiobook, book, fachartikel, game, idea, information, podcast, software, video, web clip
+
+## Wie der /learn-Skill Notion nutzt
+
+1. Fragt die Datenbank ab (Filter: inboxed=true)
+2. Prueft Titel auf KI-Relevanz
+3. Holt YouTube-Transcripts und Artikel automatisch
+4. Setzt Type + Project in Notion (Item verlaesst Inbox)
+5. Verdichtet in `knowledge/`, archiviert nach `sources/archive/`

@@ -1,0 +1,9 @@
+# Dispatches
+
+Zentrale Uebersicht aller Wissens-Dispatches an andere Teams. Wird von `/learn` befuellt und von den Ziel-Teams bei Sessionstart gelesen.
+
+**Fuer Ziel-Teams:** Pruefe nur Zeilen mit `[ ]` und deinem Team-Namen. Wenn verarbeitet, setze `[x]`.
+
+## Offene Dispatches
+
+<!-- Format: - [ ] | YYYY-MM-DD | team-name | Titel | Pfad zur Dispatch-Notiz -->

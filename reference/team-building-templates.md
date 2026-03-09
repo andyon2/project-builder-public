@@ -1,0 +1,433 @@
+# Team-Building: Templates, Prozeduren und Checklisten
+
+Dieses Dokument wird von Team-Building-Skills on demand geladen. Es ist bewusst NICHT im System Prompt -- nur laden wenn du ein Team entwirfst, auditierst oder migrierst.
+
+---
+
+## Dateiformat-Spezifikation
+
+### CLAUDE.md (Projektroot)
+```markdown
+# [Projektname]
+
+## Ziel
+[Klares, messbares Ziel mit Zeitrahmen und Constraints]
+
+## Ich ([Name])
+[Relevanter Hintergrund, Skills, aktuelle Situation -- nur was fuer den Kontext wichtig ist]
+
+## Kommunikation
+[Sprache, Ton, Praeferenzen]
+[Umlaut-Regel -- abhaengig vom Projekttyp:
+- Deutschsprachige Endnutzer-Projekte: "Umlaute: ä, ö, ü verwenden, NICHT ae, oe, ue."
+- Technische Projekte: "Umlaute: ae, oe, ue statt ä, ö, ü (Encoding-Sicherheit)."]
+
+## Projektstruktur
+[Dateipfade und was darin liegt -- als Referenz fuer alle Agents]
+
+Zentrale Dateien:
+- `project-status.md` -- Projektstatus (bei Sessionstart gelesen, bei Sessionende aktualisiert)
+- `briefings/` -- Briefing-Dokumente fuer direkte Agent-Sessions
+
+## Agenten
+
+| Agent | Aufgabe | Modell | Modus |
+|-------|---------|--------|-------|
+| [name] | [Beschreibung] | sonnet | delegiert |
+| [name] | [Beschreibung] | sonnet | delegiert + direkt |
+
+## Skills
+
+| Skill | Aufgabe | Kontext |
+|-------|---------|---------|
+| /[name] | [Beschreibung] | fork |
+| /[name] | [Beschreibung] | inline |
+
+## Regeln
+[Uebergreifende Regeln, die fuer alle Agents gelten]
+```
+
+**Laenge:** Ziel <100 Zeilen. Keine Templates, keine Prozeduren, keine historischen Entscheidungen. Nur Fakten und Struktur.
+
+### System Prompt fuer Main-Agent (z.B. `main-agent.md`)
+
+**Design-Prinzip: Kurz halten.** System Prompts werden in langen Konversationen "verduennt" -- je laenger, desto mehr vergisst der Agent. Nur Identitaet, Strategie und Delegationslogik. Alles Prozedurale gehoert in Skills (die bei jedem Aufruf frisch geladen werden).
+
+```markdown
+Du bist [Rolle] -- [Beziehung zum Nutzer und Zweck].
+
+## Deine Rolle
+[2-3 Saetze: Was du bist und was du NICHT bist]
+
+## Wie du dich verhaeltst
+
+### Strategisch mitdenken
+[Wann und wie challengst du den Nutzer?]
+
+### Konsistenz sichern
+[Worauf achtest du uebergreifend?]
+
+### Orchestrieren
+[Delegationslogik: Skill → Agent → Eigenarbeit. Wie pruefst du Output?]
+
+### Kontext schuetzen
+- Skills vor Agents, Delegation vor Eigenarbeit
+- Zwischenergebnisse in Dateien, nicht im Chat
+- Direkte Sessions bei explorativen Dialogen (>5 Interaktionen)
+- Knowledge/Referenz NICHT bei Sessionstart laden
+
+## Deine Skills
+[Tabelle: Name | Wann nutzen]
+
+### Selbst-Erweiterung
+Frage: "Dafuer gibt es noch keinen Skill/Agent. Soll ich einen erstellen?"
+Wenn ja: Rufe /extend-team auf.
+
+## Sessionstart
+1. Lies `project-status.md`
+2. [Projektspezifisch]
+3. Brief den User
+
+## Sessionende
+1. Rufe `/track` auf
+2. Zwischenergebnisse in Dateien
+3. Frage: "Soll ich committen und pushen?"
+
+## Was du NICHT bist
+[Explizite Abgrenzung]
+```
+
+**Laenge:** Ziel <120 Zeilen. Referenzmaterial (Templates, Checklisten) gehoert in On-Demand-Dateien.
+
+### Sub-Agent-Dateien (in `.claude/agents/`)
+
+#### Modellwahl pro Agent
+
+| Modell | Wann einsetzen | Typische Rollen |
+|--------|---------------|-----------------|
+| `opus` | Main-Agent (via CLI-Flag). Fuer Sub-Agents nur in begruendeten Ausnahmen. |
+| `sonnet` | Inhaltliche Arbeit, Texterstellung, Code, Recherche, Analyse |
+| `haiku` | Einfache, mechanische Aufgaben, Statusabfragen, Daten-Fetching |
+
+**Pflicht:** Jeder Agent und jeder Fork-Skill MUSS ein explizites `model`-Feld haben. Ohne model-Feld erbt der Sub-Agent das Modell des Main-Agents.
+
+#### Standard-Sub-Agent (nur delegiert)
+```markdown
+---
+name: [agent-name]
+description: [Wann dieser Agent eingesetzt wird -- klar und spezifisch]
+model: [sonnet / haiku -- Pflichtfeld]
+tools: [Nur die Tools, die dieser Agent braucht]
+maxTurns: [Pflichtfeld. 15-25 fuer normale Tasks.]
+---
+
+Du bist der [Rolle] im [Projektname].
+
+## Wer du bist
+[Denkweise, Perspektive, Expertise -- nicht nur Aufgaben, sondern Urteilsvermoegen.
+"Du denkst wie ein erfahrener [Analogie], der..."]
+
+## Kontext
+[Welche Dateien zuerst lesen]
+
+## [Hauptaufgaben-Sektion]
+[Spezifische Arbeitsanweisungen, Formate, Prozesse]
+
+## Strategische Eskalation
+[Welche uebergeordneten Erkenntnisse zurueckmelden? Konkrete Trigger.]
+
+## Wissensquellen
+[Falls Fachwissen noetig: Welche Quellen, wann recherchieren, wie festhalten?]
+
+## Selbstcheck vor Abgabe
+[3-5 Prueffragen. Mindestens eine gegen Gesamtstrategie.]
+```
+
+#### Dialogischer Sub-Agent (delegiert + direkt)
+```markdown
+---
+name: [agent-name]
+description: [Wann dieser Agent eingesetzt wird]
+model: [sonnet / haiku -- Pflichtfeld]
+tools: [Nur die Tools, die dieser Agent braucht]
+maxTurns: [Pflichtfeld. 20-30 fuer dialogische Tasks.]
+---
+
+Du bist der [Rolle] im [Projektname].
+
+## Wer du bist
+[Denkweise, Perspektive, Expertise -- Urteilsvermoegen, nicht nur Aufgaben.]
+
+## Kontext
+[Welche Dateien zuerst lesen]
+
+## Interaktionsmodi
+
+### Delegiert (One-Shot)
+- Klar definierten Auftrag abarbeiten, Ergebnis zurueck
+
+### Direkt (Interaktive Session)
+- Briefing unter `briefings/[dein-name]-*.md` lesen (falls vorhanden)
+- Dialog fuehren, Ergebnisse in Projektdateien schreiben
+- Am Ende zusammenfassen: Was erarbeitet, was offen
+
+## [Hauptaufgaben-Sektion]
+[Arbeitsanweisungen. Fuer Direkt-Modus: Gespraechsfuehrung, Fragetechniken.]
+
+## Strategische Eskalation
+[Im Direkt-Modus: Erkenntnisse in `briefings/[dein-name]-insights.md`]
+
+## Selbstcheck vor Abgabe
+[3-5 Prueffragen. Im Direkt-Modus zusaetzlich:
+- Alle Ergebnisse in Projektdateien?
+- Strategische Erkenntnisse fuer Main-Agent?
+- Offene Punkte dokumentiert?]
+```
+
+### Starter-Scripts (in `scripts/`)
+
+#### Git-Sync-Check (Pflichtblock)
+
+Jedes Starter-Script enthaelt vor dem `exec claude`-Aufruf:
+```bash
+# Git-Remote-Check: Warnung wenn Remote neuere Commits hat
+if git rev-parse --git-dir &>/dev/null; then
+    git fetch origin --quiet 2>/dev/null || true
+    LOCAL=$(git rev-parse HEAD 2>/dev/null || true)
+    REMOTE=$(git rev-parse origin/main 2>/dev/null || true)
+    if [[ -n "$LOCAL" && -n "$REMOTE" && "$LOCAL" != "$REMOTE" ]]; then
+        BEHIND=$(git rev-list --count HEAD..origin/main 2>/dev/null || echo "0")
+        if [[ "$BEHIND" -gt 0 ]]; then
+            echo ""
+            echo "⚠  Remote hat $BEHIND neuere Commits. Willst du pullen? (j/n)"
+            read -r ANSWER
+            if [[ "$ANSWER" == "j" ]]; then
+                git pull --ff-only origin main || echo "Pull fehlgeschlagen -- bitte manuell loesen."
+            fi
+            echo ""
+        fi
+    fi
+fi
+```
+
+#### Main-Agent-Starter
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+cd "$PROJECT_ROOT"
+
+# [Git-Sync-Check hier einfuegen]
+
+exec claude --system-prompt-file "$PROJECT_ROOT/[main-agent].md" \
+  "Sessionstart: Lies project-status.md, [weitere Dateien], dann brief mich wo wir stehen. Reminder: Wenn ich die Session beende, frage mich ob du committen und pushen sollst."
+```
+
+- Scripts liegen immer im Repo (`scripts/`), nie ausserhalb
+- Globale Shortcuts via Symlink in `~/.local/bin/`
+- Start-Prompt endet mit Commit+Push-Reminder
+
+#### Sub-Agent-Starter (fuer dialogische Agents)
+
+Sub-Agent-Scripts brauchen keinen Git-Check (Main-Agent-Start hat ihn bereits durchgefuehrt).
+```bash
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+AGENT_FILE="$PROJECT_ROOT/.claude/agents/[agent-name].md"
+
+if [[ ! -f "$AGENT_FILE" ]]; then
+    echo "Fehler: Agent-Datei nicht gefunden: $AGENT_FILE"
+    exit 1
+fi
+
+BRIEFING_DIR="$PROJECT_ROOT/briefings"
+if [[ -f "$BRIEFING_DIR/[agent-name]-"*.md ]]; then
+    DYNAMIC_PROMPT="Lies Briefing: briefings/[agent-name]-*.md. Arbeite mit dem User. Reminder: Sessionende → committen/pushen?"
+else
+    DYNAMIC_PROMPT="Kein Briefing. Frage den User. Lies CLAUDE.md. Reminder: Sessionende → committen/pushen?"
+fi
+
+exec claude --append-system-prompt "$(cat "$AGENT_FILE")" "$DYNAMIC_PROMPT"
+```
+
+### Skills (in `.claude/skills/[name]/SKILL.md`)
+
+**Token-Oekonomie:**
+- **Inline-Skills:** Im Main-Agent-Kontext. Nur fuer winzige Tasks (<3 Turns).
+- **Fork-Skills:** Eigener Kontext, eigenes Modell. Fast immer guenstiger als Agents. Im Zweifel: `context: fork` mit `model: haiku`.
+
+#### Einfacher Skill
+```markdown
+---
+name: [skill-name]
+description: [Wann getriggert -- klar fuer natuerlichsprachliche Erkennung]
+argument-hint: [Optional: "[firma]" oder "[thema]"]
+allowed-tools: [Optional: "Read, Grep, Bash"]
+---
+
+[Anweisungen. $ARGUMENTS als Platzhalter fuer Argumente.]
+```
+
+#### Fork-Skill
+```markdown
+---
+name: [skill-name]
+description: [Wann getriggert]
+context: fork
+model: [haiku / sonnet -- Pflichtfeld!]
+---
+
+[Anweisungen fuer isolierten Subagent. Kann:
+- Mehrere Dateien lesen/analysieren
+- Hilfsskripte aufrufen
+- Reports in Projektdateien schreiben
+- Parallele Agenten spawnen]
+```
+
+#### Interview-Skill (strukturierter Kurz-Dialog)
+```markdown
+---
+name: [skill-name]
+description: [Wann getriggert]
+---
+
+[Strukturierter Dialog mit 3-5 Fragen und definiertem Output-Format.]
+```
+
+#### Pflicht-Skill: `/reflect`
+
+Jedes Team bekommt `/reflect` (Fork, Sonnet). Output: `.claude/team-reflection.md`.
+```markdown
+---
+name: reflect
+description: Ehrliche Selbstanalyse des Agent-Teams
+allowed-tools: "Read, Glob, Grep, Write"
+context: fork
+model: sonnet
+---
+
+Analysiere das eigene Team schonungslos ehrlich.
+1. Lies: CLAUDE.md, alle Agents, alle Skills, System-Prompt, project-status.md
+2. Analysiere: Rollen-Klarheit, Ueberschneidungen, Nutzungshaeufigkeit
+3. Prinzip-Konsistenz: Extrahiere Prinzipien aus System Prompt, pruefe ob jede Taetigkeit einen Skill hat, suche nach Luecken (was sollte da sein, ist aber nicht)
+4. Identifiziere: Schwachstellen, fehlende Skills, Ineffizienzen
+5. Schreibe nach `.claude/team-reflection.md`
+```
+
+#### Agent-zu-Skill-Konvertierung
+
+Wenn ein Agent eigentlich ein Skill sein sollte:
+1. Hat er eine echte Denkweise oder nur Aufgaben?
+2. Trifft er eigenstaendige Urteile oder folgt er einem Workflow?
+3. Wenn beides Nein → Konvertiere: Body kuerzen, Workflow-fokussiert, fork/haiku, "Wer du bist" und Eskalation entfallen.
+
+### Briefings (in `briefings/`)
+```markdown
+# Briefing: [Agent-Name] -- [Thema]
+
+## Erstellt von
+Main-Agent, [Datum]
+
+## Ziel dieser Session
+[Was soll als Ergebnis vorliegen?]
+
+## Kontext
+[Relevanter Hintergrund]
+
+## Leitplanken
+[Grenzen, nicht verhandelbare Entscheidungen]
+
+## Offene Fragen
+[Konkrete Fragen fuer den Dialog]
+
+## Ergebnis-Dateien
+[Wohin die Ergebnisse geschrieben werden]
+```
+
+---
+
+## Vorgehen beim Team-Entwurf
+
+### Schritt 1: Anforderungen klaeren
+- Was ist das konkrete Ziel?
+- Welche Aufgabentypen: wiederholbare Workflows (Skill) vs. eigenstaendige Denkarbeit (Agent)?
+- Welche Experten braucht man? Welche sind "Denker" vs. "Ausfuehrer"?
+- Wie soll der Main-Agent sich verhalten?
+- Welche Dateien als Gedaechtnis?
+- Welches Fachwissen brauchen die Agents?
+- Welche Aufgaben erfordern laengeren Dialog?
+- Wird das Produkt vermarktet? → Strategy-Check
+
+### Schritt 2: Architektur vorschlagen
+
+**Zuerst Skills identifizieren:**
+- Jede Aufgabe durchgehen: Kann das ein Skill sein?
+- Typ (Encoded Preference / Capability Uplift) und Kontext (inline / fork) bestimmen
+- Begruenden: Warum reicht ein Skill?
+
+**Dann Agents identifizieren:**
+- Nur Rollen die nach Skill-Pruefung uebrig bleiben
+- Pro Agent begruenden: Warum reicht kein Skill? Welche Denkweise?
+- Modell zuweisen (sonnet / haiku), Modus (delegiert / delegiert + direkt)
+
+**Content-Check:** Endnutzer-Texte → Anti-GPTism-Regeln aus `knowledge/content-humanization.md`
+
+**Strategy-Check:**
+- Produkt wird vermarktet? → Wer hat Strategie-Hoheit?
+- Main-Agent IST Stratege / Separater Strategy-Agent / Kein Strategie-Bedarf
+
+**Architektur-Check:**
+- Skill-zu-Agent-Verhaeltnis: mindestens 1:1, idealerweise 1.5:1+
+- Token-Impact schaetzen
+
+**Context-Burden-Check:**
+- Immer-geladene Dateien (CLAUDE.md + System Prompt + project-status.md) <400 Zeilen
+- Keine Templates/Prozeduren in immer-geladenen Dateien
+
+### Schritt 3: Alle Dateien erstellen
+- `CLAUDE.md` (mit Agent-Tabelle, Skill-Tabelle, Umlaut-Regel)
+- `[main-agent].md` (System Prompt, <120 Zeilen)
+- `.claude/agents/[name].md` (mit model, maxTurns)
+- `.claude/skills/[name]/SKILL.md` (mit model bei fork)
+- `.claude/skills/reflect/SKILL.md` (Pflicht)
+- `scripts/[main-agent]` (chmod +x, Git-Sync-Check, Commit-Reminder)
+- `scripts/[agent-name]` (fuer dialogische Agents)
+- `project-status.md` (initial)
+- `briefings/` (mit .gitkeep)
+- `.gitignore`
+
+### Schritt 3b: Git-Repository einrichten
+1. `git init`
+2. `.gitignore` pruefen (keine Secrets)
+3. Initial Commit
+4. `gh repo create --private --source . --remote origin --push`
+
+### Schritt 4: Startanleitung geben
+- Main-Agent starten: `scripts/[name]`
+- Skills: `/skill-name`
+- Session beenden: Agent aktualisiert Status, fragt nach Commit+Push
+- Direkte Sessions: Main-Agent sagt wann, `scripts/[agent-name]` starten
+
+---
+
+## Qualitaetsprinzipien (Checkliste)
+
+- Jeder Agent braucht eine Denkweise, nicht nur Aufgaben
+- Eskalation ist Pflicht: Sub-Agents melden strategisch relevante Erkenntnisse
+- Selbstcheck verhindert Drift: Output gegen Gesamtstrategie pruefen
+- "Was du NICHT bist" ist wichtig: Ohne Abgrenzung → generisches Assistenten-Verhalten
+- Dateien sind das Gedaechtnis: Was nur im Chat steht ist nach der Session weg
+- Fachwissen definieren: Wo holt der Agent es her, wie haelt er es fest?
+- Direkt-Modus ist Eskalationsstufe, nicht Default
+- Reviewer-Schleife darf nicht brechen: Kein Output ohne Review
+- maxTurns ist Pflicht: Sicherheitsnetz gegen Endlos-Schleifen
+- Content-Agents brauchen Anti-GPTism-Regeln aus `knowledge/content-humanization.md`
+- Git ist Infrastruktur: Private Repo, .gitignore, Starter-Scripts mit Git-Sync-Check
+- Umlaut-Regel ist Pflicht in CLAUDE.md
+- `/reflect` ist Pflicht in jedem Team
+- **Immer-geladene Dateien schlank halten:** CLAUDE.md <100 Zeilen, System Prompt <200 Zeilen, project-status.md <50 Zeilen. Referenzmaterial in On-Demand-Dateien.

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Startet den Project Builder als interaktive Session
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+
+cd "$PROJECT_ROOT"
+
+# Git-Remote-Check: Warnung wenn Remote neuere Commits hat
+if git rev-parse --git-dir &>/dev/null; then
+    git fetch origin --quiet 2>/dev/null || true
+    LOCAL=$(git rev-parse HEAD 2>/dev/null || true)
+    REMOTE=$(git rev-parse origin/main 2>/dev/null || true)
+    if [[ -n "$LOCAL" && -n "$REMOTE" && "$LOCAL" != "$REMOTE" ]]; then
+        BEHIND=$(git rev-list --count HEAD..origin/main 2>/dev/null || echo "0")
+        if [[ "$BEHIND" -gt 0 ]]; then
+            echo ""
+            echo "⚠  Remote hat $BEHIND neuere Commits. Willst du pullen? (j/n)"
+            read -r ANSWER
+            if [[ "$ANSWER" == "j" ]]; then
+                git pull --ff-only origin main || echo "Pull fehlgeschlagen -- bitte manuell loesen."
+            fi
+            echo ""
+        fi
+    fi
+fi
+
+exec claude --system-prompt-file "$PROJECT_ROOT/main-agent.md" \
+  "Sessionstart: Lies project-status.md und dispatches.md, pruefe ob neue Quellen in sources/inbox/ liegen, dann brief mich wo wir stehen und was ansteht. Reminder: Wenn ich die Session beende, frage mich ob du committen und pushen sollst."

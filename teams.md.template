@@ -1,0 +1,28 @@
+# Aktive Agent-Teams
+
+Zentrale Registry aller lokalen Agent-Teams. Wird von `/learn` als Routing-Tabelle genutzt, um Erkenntnisse an die richtigen Projekte weiterzuleiten.
+
+## Teams
+
+| Team | Pfad | Beschreibung | Wissensgebiete |
+|------|------|--------------|----------------|
+| beispiel-app | ~/beispiel-app | Beispiel-Projekt | webentwicklung, react, testing |
+
+## Routing-Logik
+
+Beim Verarbeiten einer Quelle wird jede Erkenntnis gegen die **Wissensgebiete** gematcht:
+
+1. Erkenntnis betrifft KI-Architektur/Prompting/Agents/Skills → `knowledge/` (project-builder eigen)
+2. Erkenntnis betrifft Wissensgebiet eines anderen Teams → `dispatches/[team-name]/`
+3. Erkenntnis betrifft beides → `knowledge/` verdichten + Dispatch-Notiz
+
+**Dispatch-Format:**
+```markdown
+# [Titel]
+
+Quelle: [archivname] ([datum])
+
+[3-5 Bullet Points: konkrete, verwertbare Erkenntnisse fuer dieses Team]
+
+Vollstaendige Quelle: sources/archive/[monat]/[archivname]
+```

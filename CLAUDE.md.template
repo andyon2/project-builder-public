@@ -1,0 +1,81 @@
+# Project Builder
+
+Agent-Architektur-System: Entwirft und optimiert Claude-Code-Agent-Teams fuer konkrete Anwendungsfaelle.
+
+## Wissensquellen
+
+Knowledge-Dateien in `knowledge/` sind Referenzmaterial -- NICHT bei Sessionstart laden.
+
+Wann laden:
+- Team-Building-Skills (`/extend-team`, `/audit-team`, `/migrate-team`) laden sie automatisch (Fork-Kontext)
+- Bei Architektur-Fragen: relevante Datei(en) gezielt lesen
+- `/learn` aktualisiert sie
+
+Dateien: `skill-best-practices.md`, `token-optimization.md`, `entscheidungshierarchie.md`, `content-humanization.md`, `session-state.md`, `widersprueche.md`
+
+## Projektstruktur
+
+```
+project-builder/
+  CLAUDE.md                             # Projektkontext (generiert aus Template)
+  main-agent.md                        # System Prompt (nur Identitaet + Prinzipien, ~90 Zeilen)
+  project-status.md                    # Projektstatus (wird vom Agent erstellt/aktualisiert)
+  reference/team-building-templates.md # Templates + Prozeduren (on demand, ~430 Zeilen)
+  README.md                            # Dokumentation
+  changelog.md                         # Versionshistorie
+  teams.md                             # Registry aller lokalen Agent-Teams (Routing-Tabelle)
+  dispatches.md                        # Tracking: offene/gelesene Dispatch-Notizen pro Team
+  config/                              # Integrationen (Notion, etc.) -- nur bei Bedarf
+  knowledge/                           # Eigenes Wissen (NUR KI-Architektur/Prompting/Agents/Skills)
+  dispatches/                          # Wissen fuer andere Teams (NICHT fuer eigenes knowledge/)
+  sources/
+    inbox/                             # Neue Quellen hier ablegen
+    archive/YYYY-MM/                   # Verarbeitete Quellen
+    log.md                             # Integrationslog (1 Zeile pro Quelle)
+  scripts/
+    learn/fetch-transcript.py          # YouTube-Transcript-Fetcher (mit Whisper-Fallback)
+    .venv/                             # Python-Umgebung
+  .claude/skills/                      # Skills (siehe unten)
+  .claude/hooks/                       # Deterministische Sicherheits-Hooks
+```
+
+## Skills
+
+| Skill | Aufgabe |
+|-------|---------|
+| `/learn [alle\|notion\|lokal\|datei]` | Wissensquellen integrieren (Notion + lokal) |
+| `/build-team [brief]` | Alle Dateien fuer neues Team erstellen (nach Anforderungsklaerung) |
+| `/extend-team [aufgabe]` | Neuen Skill/Agent entwerfen (inkl. Skill-Suite-Pruefung) |
+| `/skill-or-agent [aufgabe]` | Schnelle Entscheidungshilfe: Skill oder Agent? |
+| `/audit-team [pfad]` | Agent-Team auf Best Practices pruefen |
+| `/audit-content [pfad]` | Texte/Code auf KI-erkennbare Muster pruefen |
+| `/migrate-team [pfad]` | Vollstaendige Team-Migration durchfuehren |
+| `/convert-agent [pfad] [name]` | Agent-zu-Skill-Konvertierung entwerfen |
+| `/apply-safe-fixes [pfad]` | Fehlende model/maxTurns-Felder einfuegen |
+| `/deploy-content-audit [pfad]` | Content-Audit in bestehendes Projekt einpflanzen |
+| `/reflect` | Team-Selbstanalyse erstellen (Pflicht-Skill fuer jedes Team) |
+| `/research-updates [thema]` | Aktuelle Entwicklungen recherchieren |
+| `/track` | Aktualisiert project-status.md mit Architektur-Entscheidungen, Meta-Learnings, offenen Punkten (inline) |
+
+## Konventionen
+
+- Sprache: Deutsch fuer Dokumentation, Englisch fuer Code
+- Umlaute: ae/oe/ue statt ae/oe/ue in allen generierten Dateien
+- Wissen wird verdichtet, nicht gesammelt (Verdichtungs-Logik in /learn)
+- Widersprueche explizit in `knowledge/widersprueche.md` tracken
+- **Fremde Repos nicht anfassen:** Dateien in anderen Projekten darfst du editieren, aber NIE committen oder pushen. Git-Operationen (commit, push, pull) macht der jeweilige Projekt-Agent selbst. Wenn ein Push noetig ist, sage dem User: "Starte den Agent in [Projekt] und lass ihn committen und pushen."
+
+## Wissens-Pipeline
+
+Neues Wissen → `sources/inbox/` oder externe Inbox → `/learn` → Routing:
+- KI-Architektur/Prompting/Agents/Skills → verdichtet in `knowledge/`
+- Wissen fuer andere Teams → Dispatch-Notiz in `dispatches/[team-name]/`
+- Beides → `knowledge/` verdichten + Dispatch-Notiz
+→ Quelle nach `sources/archive/`
+
+**Harte Regel:** `dispatches/` ist Fremdwissen. Nie fuer eigenes `knowledge/` heranziehen. Routing-Tabelle: `teams.md`.
+
+## Integrationen
+
+Integrationen liegen unter `config/`. Lies die relevanten Dateien wenn ein Skill sie braucht.
+Falls keine Config-Dateien existieren, arbeitet der Agent ohne externe Integrationen.
