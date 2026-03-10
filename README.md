@@ -81,7 +81,7 @@ Zwei Befehle rufst du selbst auf:
 ## Setup
 
 ```bash
-git clone https://github.com/andyon2/project-builder.git ~/project-builder
+git clone https://github.com/andyon2/project-builder-public.git ~/project-builder
 cd ~/project-builder
 ./scripts/setup.sh
 ```
