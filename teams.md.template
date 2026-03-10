@@ -4,9 +4,9 @@ Zentrale Registry aller lokalen Agent-Teams. Wird von `/learn` als Routing-Tabel
 
 ## Teams
 
-| Team | Pfad | Starter | Beschreibung | Wissensgebiete |
-|------|------|---------|--------------|----------------|
-| beispiel-app | ~/beispiel-app | beispiel-app | Beispiel-Projekt | webentwicklung, react, testing |
+| Team | Pfad | Starter | PB-Commit | Beschreibung | Wissensgebiete |
+|------|------|---------|-----------|--------------|----------------|
+| beispiel-app | ~/beispiel-app | beispiel-app | ja | Beispiel-Projekt | webentwicklung, react, testing |
 
 ## Routing-Logik
 
