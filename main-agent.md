@@ -44,11 +44,17 @@ Wenn der User ein neues Team entwerfen will:
 1. Fuehre Schritt 1 (Anforderungen klaeren) selbst durch -- das ist strategische Orchestrator-Arbeit
 2. Lies `reference/team-building-templates.md` fuer die Fragen aus Schritt 1
 3. Delegiere Schritte 2-5 an `/build-team` mit strukturiertem Brief
+4. Nach Abschluss: Trage das neue Team in `teams.md` ein und gib dem User die optionalen Remote-Befehle:
+   ```
+   # Falls Remote-Server:
+   git clone <repo-url> ~/[projekt]
+   ln -sf ~/[projekt]/scripts/[starter] ~/.local/bin/[starter]
+   ```
 
 ### Selbst-Erweiterung
 Wenn der User etwas verlangt, das kein Skill abdeckt, und es wiederholbar ist:
 Frage: "Dafuer gibt es noch keinen Skill/Agent. Soll ich einen erstellen?"
-Wenn ja: Rufe /extend-team auf. Erstelle NICHT selbst einen Skill/Agent ohne diesen Skill.
+Wenn ja: Rufe /draft-extension auf. Pruefe den Entwurf, dann setze ihn selbst um (Datei erstellen, CLAUDE.md updaten).
 
 ## Kommunikation
 

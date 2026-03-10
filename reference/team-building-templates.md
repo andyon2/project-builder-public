@@ -84,7 +84,7 @@ Bei grossen Teams (10+): Weglassen -- Progressive Disclosure ueber YAML-Descript
 
 ### Selbst-Erweiterung
 Frage: "Dafuer gibt es noch keinen Skill/Agent. Soll ich einen erstellen?"
-Wenn ja: Rufe /extend-team auf.
+Wenn ja: Rufe /draft-extension auf. Pruefe den Entwurf, dann setze ihn selbst um.
 
 ## Sessionstart
 1. Lies `project-status.md`
@@ -218,19 +218,31 @@ fi
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 cd "$PROJECT_ROOT"
 
 # [Git-Sync-Check hier einfuegen]
 
-exec claude --system-prompt-file "$PROJECT_ROOT/[main-agent].md" \
-  "Sessionstart: Lies project-status.md, [weitere Dateien], dann brief mich wo wir stehen. Reminder: Wenn ich die Session beende, frage mich ob du committen und pushen sollst."
+PROMPT_FILE="$PROJECT_ROOT/[main-agent].md"
+STARTER_PROMPT="Sessionstart: Lies project-status.md, [weitere Dateien], dann brief mich wo wir stehen. Reminder: Wenn ich die Session beende, frage mich ob du committen und pushen sollst."
+
+# --get-prompt: Nur den Starter-Prompt ausgeben (fuer externe Apps)
+# --remote: Claude ohne Starter-Prompt starten (fuer Remote Control Flow)
+if [[ "${1:-}" == "--get-prompt" ]]; then
+  echo "$STARTER_PROMPT"
+  exit 0
+elif [[ "${1:-}" == "--remote" ]]; then
+  exec claude --system-prompt-file "$PROMPT_FILE"
+else
+  exec claude --system-prompt-file "$PROMPT_FILE" "$STARTER_PROMPT"
+fi
 ```
 
 - Scripts liegen immer im Repo (`scripts/`), nie ausserhalb
 - Globale Shortcuts via Symlink in `~/.local/bin/`
 - Start-Prompt endet mit Commit+Push-Reminder
+- `--remote` und `--get-prompt` Flags sind Pflicht (fuer Claude Launcher / Remote Control)
 
 #### Sub-Agent-Starter (fuer dialogische Agents)
 
@@ -239,7 +251,7 @@ Sub-Agent-Scripts brauchen keinen Git-Check (Main-Agent-Start hat ihn bereits du
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")" && pwd)"
 PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 AGENT_FILE="$PROJECT_ROOT/.claude/agents/[agent-name].md"
 
@@ -409,6 +421,13 @@ Main-Agent, [Datum]
 2. `.gitignore` pruefen (keine Secrets)
 3. Initial Commit
 4. `gh repo create --private --source . --remote origin --push`
+
+### Schritt 3c: Remote-Server-Deployment (optional)
+Falls ein Remote-Server konfiguriert ist, Repo dort klonen und Shortcut einrichten:
+1. Repo klonen in das Projektverzeichnis auf dem Server
+2. Starter-Script als Symlink in den PATH des Servers legen
+
+Falls kein SSH-Zugang vom Build-Rechner besteht, dem User die Befehle ausgeben.
 
 ### Schritt 4: Startanleitung geben
 - Main-Agent starten: `scripts/[name]`

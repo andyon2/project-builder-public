@@ -1,6 +1,6 @@
 ---
-name: extend-team
-description: "Erstellt einen fertigen Entwurf (SKILL.md oder Agent-Datei) fuer eine neue Aufgabe. Entscheidet selbststaendig ob Skill oder Agent die richtige Abstraktion ist. Nicht fuer Ja/Nein-Entscheidungen ohne Dateierstellung."
+name: draft-extension
+description: "Entwirft einen Vorschlag fuer einen neuen Skill oder Agent. Gibt Empfehlung ob Skill oder Agent, liefert den SKILL.md/Agent-Entwurf zur Diskussion. Erstellt und aendert keine Dateien -- Umsetzung erfolgt separat."
 argument-hint: "[aufgabenbeschreibung]"
 allowed-tools: "Read, Glob, Grep"
 context: fork

@@ -7,7 +7,7 @@ Agent-Architektur-System: Entwirft und optimiert Claude-Code-Agent-Teams fuer ko
 Knowledge-Dateien in `knowledge/` sind Referenzmaterial -- NICHT bei Sessionstart laden.
 
 Wann laden:
-- Team-Building-Skills (`/extend-team`, `audit-team`, `apply-audit`) laden sie automatisch (Fork-Kontext)
+- Team-Building-Skills (`/draft-extension`, `audit-team`, `apply-audit`) laden sie automatisch (Fork-Kontext)
 - Bei Architektur-Fragen: relevante Datei(en) gezielt lesen
 - `/learn` aktualisiert sie
 
@@ -53,7 +53,7 @@ project-builder/
 | `audit-team` | Agent-Team auf Best Practices analysieren (read-only) |
 | `apply-audit` | Audit-Ergebnisse anwenden (Safe Fixes, Konvertierungen, Backups) |
 | `build-team` | Alle Dateien fuer neues Team erstellen |
-| `extend-team` | Neuen Skill/Agent entwerfen |
+| `draft-extension` | Vorschlag fuer neuen Skill/Agent entwerfen (aendert keine Dateien) |
 | `audit-content` | Texte/Code auf KI-erkennbare Muster pruefen |
 | `reflect` | Team-Selbstanalyse (mit Prinzip-Konsistenz-Check) |
 | `convert-agent` | Agent als Skill durchspielen (Gedankenexperiment) |
