@@ -1,6 +1,6 @@
 ---
 name: audit-content
-description: Prueft bestehenden Content (Texte, Webseiten-Code) auf KI-erkennbare Muster. Findet GPTisms, Claude Gradients, strukturelle Tells und gibt konkrete Fix-Vorschlaege. Aufrufen mit Dateipfad oder Verzeichnis.
+description: "Prueft Texte und Webseiten-Code auf KI-erkennbare Muster (GPTisms, Claude Gradients, strukturelle Tells). Gibt Fix-Vorschlaege. Nicht fuer Agent-Team-Analysen (→ audit-team)."
 argument-hint: "[pfad-zu-content]"
 allowed-tools: "Read, Glob, Grep"
 context: fork

@@ -1,6 +1,6 @@
 ---
 name: audit-team
-description: Analysiert ein bestehendes Agent-Team auf Token-Effizienz, Skill/Agent-Balance, fehlende Best Practices und empfiehlt fortgeschrittene Patterns aus der aktuellen Knowledge-Base. Reine Analyse -- aendert NICHTS am Zielprojekt. Aufrufen mit dem Pfad zum Projektverzeichnis.
+description: "Analysiert ein Agent-Team auf Token-Effizienz, Skill/Agent-Balance und Best Practices. Reine Analyse, aendert nichts. Nicht fuer Content-Pruefung (→ audit-content) oder direkte Aenderungen (→ apply-audit)."
 argument-hint: "[projekt-pfad]"
 allowed-tools: "Read, Glob, Grep"
 context: fork

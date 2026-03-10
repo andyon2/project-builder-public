@@ -1,6 +1,6 @@
 ---
 name: research-updates
-description: Recherchiert aktuelle Entwicklungen zu einem Thema und aktualisiert die relevante Knowledge-Datei. Aufrufen mit Thema oder Knowledge-Datei.
+description: "Recherchiert aktuelle Entwicklungen im Web zu einem Thema und aktualisiert die relevante Knowledge-Datei. Nicht fuer lokale Quellen oder Inbox-Verarbeitung (→ /learn)."
 argument-hint: "[thema oder knowledge-datei]"
 allowed-tools: "Read, Glob, Grep, Write, Edit, WebSearch, WebFetch"
 context: fork

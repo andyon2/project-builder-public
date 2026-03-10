@@ -31,7 +31,7 @@ Lies bei jedem Aufruf:
 
 ### N.1 Notion abfragen
 
-Query die Notes-DB `cd8b8484-6919-4e48-8cb1-be2c627a5ee5` mit:
+Query die Notes-DB `<YOUR-NOTION-DB-ID>` mit:
 ```json
 {
   "and": [
@@ -41,7 +41,7 @@ Query die Notes-DB `cd8b8484-6919-4e48-8cb1-be2c627a5ee5` mit:
 }
 ```
 
-Nur diese Properties abfragen (Token sparen): `title`, `G%3D%5C%5E` (URL), `oYqt` (Type), `kimN` (Created), `ugyE` (inboxed).
+Nur diese Properties abfragen (Token sparen): `title`, `<URL-PROPERTY-ID>` (URL), `<TYPE-PROPERTY-ID>` (Type), `<CREATED-PROPERTY-ID>` (Created), `<INBOXED-PROPERTY-ID>` (inboxed).
 Sortierung: Created descending.
 
 Falls keine Ergebnisse: Melde "Notion-Inbox leer" und weiter zu Schritt 0.
@@ -83,7 +83,7 @@ mv "sources/inbox/notion-tmp.md" "sources/inbox/${SLUG}.md"
 ### N.4 In Notion als verarbeitet markieren
 
 Fuer jeden erfolgreich geholten Eintrag zwei Properties setzen:
-1. **Project** als Relation auf algron (`eb9b7f96-a925-4cb8-a113-1ac8d6acb1d6`) -- **das ist der kritische Schritt, der inboxed=false macht**
+1. **Project** als Relation auf das Projekt (`<YOUR-PROJECT-RELATION-ID>`) -- **das ist der kritische Schritt, der inboxed=false macht**
 2. **Type** auf den passenden Wert aus der TYPE LIST (siehe unten) -- reine Kategorisierung, aendert inboxed nicht
 
 NUR nach erfolgreichem Fetch + lokalem Speichern. Nie vorher.
@@ -91,8 +91,8 @@ Wenn der PATCH fuer Project fehlschlaegt, bleibt der Eintrag in der Inbox (gewue
 
 ```
 PATCH page_id → properties: {
-  "oYqt": {"select": {"name": "<type>"}},
-  "%7CUS%7C": {"relation": [{"id": "eb9b7f96-a925-4cb8-a113-1ac8d6acb1d6"}]}
+  "<TYPE-PROPERTY-ID>": {"select": {"name": "<type>"}},
+  "<PROJECT-PROPERTY-ID>": {"relation": [{"id": "<YOUR-PROJECT-RELATION-ID>"}]}
 }
 ```
 
@@ -231,11 +231,11 @@ Vollstaendige Quelle: ~/project-builder/sources/archive/[monat]/[archivname]
 **C) Beides** (betrifft KI-Architektur UND ein anderes Team):
 → `knowledge/` verdichten (Schritt 3) UND Dispatch-Notiz + Zeile in `dispatches.md` schreiben.
 
-**Harte Regel:** Wenn eine Erkenntnis nur ein anderes Team betrifft (z.B. Code-Review-Patterns fuer mr-review, Tanz-Didaktik fuer contaktart), gehoert sie NICHT in `knowledge/`. Nur Dispatch.
+**Harte Regel:** Wenn eine Erkenntnis nur ein anderes Team betrifft (z.B. Code-Review-Patterns fuer ein Review-Team, Tanz-Didaktik fuer ein Content-Team), gehoert sie NICHT in `knowledge/`. Nur Dispatch.
 
-**Dispatch-Zustellung mr-review:** mr-review laeuft auf einem externen Server. Nach dem Schreiben einer Dispatch-Notiz fuer mr-review, synchronisiere NUR die neue Dispatch-Datei:
+**Dispatch-Zustellung an externe Server:** Wenn ein Team auf einem externen Server laeuft, synchronisiere NUR die neue Dispatch-Datei:
 ```bash
-rsync -av dispatches/mr-review/[neue-datei].md andreas@77.42.39.93:~/claude-projects/mr-review/dispatches/
+rsync -av dispatches/[team-name]/[neue-datei].md <USER>@<SERVER-IP>:~/claude-projects/[team-name]/dispatches/
 ```
 **Harte Regeln fuer Server-Zugriff:**
 - NUR `dispatches/` beschreiben, NIE andere Dateien auf dem Server aendern
@@ -282,7 +282,7 @@ Fuehre die in Schritt 3 bestimmten Aenderungen durch. Halte dich an die bestehen
 
 ### 5. Masterprompt-Impact pruefen
 
-Lies die aktuelle Masterprompt-Version (Datei mit hoechstem `v`-Suffix im Root).
+Lies `main-agent.md` (System Prompt des Main-Agents).
 
 Pruefe: Erfordern die neuen Erkenntnisse Aenderungen am Masterprompt?
 - Neue Prinzipien fuer die Saeulen?

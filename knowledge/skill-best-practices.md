@@ -34,11 +34,11 @@ Wichtig fuer Token-Budget: Das CLAUDE.md muss kompakt bleiben. Mit wachsenden ge
 - improved-skill.md (2026-03-06) -- Fork-Skill-Patterns, Hilfsskripte-Auslagerung
 - Claude 2.0 is finally here.md (2026-03-07) -- Skill Creator Plugin, context:fork Verhalten
 - stop-building-ai-agents-do-this-instead.md (2026-03-07) -- MCP-Skills-Metapher, Skill-Suite-Muster (Ordner-Struktur fuer verwandte Skills), Progressive Disclosure Mechanismus, Non-Techniker-Zugang
-- 2026-03-08_ki-am-murksen-hindern.md (2026-03-08) -- Grounding-Execution-Evaluation-Finalizing Pattern, Praxis-Fehlerdaten. Code-Review-spezifische Teile (diverse Reviewer, Cross-Model, DoD) dispatched an mr-review.
+- 2026-03-08_ki-am-murksen-hindern.md (2026-03-08) -- Grounding-Execution-Evaluation-Finalizing Pattern, Praxis-Fehlerdaten. Code-Review-spezifische Teile (diverse Reviewer, Cross-Model, DoD) dispatched an zustaendiges Team.
 - 2026-03-08_ai-agents-full-course-2026-master-agentic-ai-2-hours.md (2026-03-08) -- Selbst-modifizierendes CLAUDE.md, Stochastic Multi-Agent Consensus, Agent Chat Rooms, Sub-Agent Verification Loops, Prompt Contracts, Reverse Prompting, Video-to-Action Pipeline.
 - 2026-03-08_how-to-build-10000-agentic-workflows-claude-code-tutorial.md (2026-03-08) -- WAT-Framework als Build-Pattern, CLAUDE.md als Projekt-System-Prompt, Deployment-Determinismus als Designprinzip.
 - 2026-03-08_agi-ist-da-warum-spricht-niemand-drber.md (2026-03-08) -- METR-Benchmark (Aufgabenhorizont 14,5h fuer Claude Opus 4.6), Multi-Agent-Parallelisierung, In-Context-Learning als AGI-Kriterium.
-- ConTaktArt Knowledge-Architektur-Analyse (2026-03-08) -- /learn als Standard-Skill, Infrastruktur-Skills als Architektur-Baustein, /track als Statusverwaltungs-Skill, Stufen-Modell fuer Knowledge-Ingestion, Naming-Konsistenz /integrate-source → /learn.
+- Knowledge-Architektur-Analyse eines Content-Teams (2026-03-08) -- /learn als Standard-Skill, Infrastruktur-Skills als Architektur-Baustein, /track als Statusverwaltungs-Skill, Stufen-Modell fuer Knowledge-Ingestion, Naming-Konsistenz /integrate-source → /learn.
 
 ## Wann ist etwas ein Skill (nicht ein Agent)?
 

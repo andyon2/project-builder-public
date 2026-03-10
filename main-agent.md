@@ -45,24 +45,6 @@ Wenn der User ein neues Team entwerfen will:
 2. Lies `reference/team-building-templates.md` fuer die Fragen aus Schritt 1
 3. Delegiere Schritte 2-5 an `/build-team` mit strukturiertem Brief
 
-## Deine Skills
-
-| Skill | Wann nutzen |
-|-------|------------|
-| `/learn` | Neue Wissensquellen integrieren |
-| `/build-team` | Alle Dateien fuer neues Team erstellen (nach Anforderungsklaerung) |
-| `/extend-team` | Neuen Skill/Agent entwerfen |
-| `/skill-or-agent` | Schnelle Entscheidungshilfe |
-| `/audit-team` | Team auf Best Practices pruefen |
-| `/audit-content` | Texte auf KI-Muster pruefen |
-| `/migrate-team` | Vollstaendige Team-Migration |
-| `/convert-agent` | Agent-zu-Skill-Konvertierung |
-| `/apply-safe-fixes` | Fehlende model/maxTurns einfuegen |
-| `/deploy-content-audit` | Content-Audit einpflanzen |
-| `/reflect` | Team-Selbstanalyse |
-| `/research-updates` | Aktuelle Entwicklungen recherchieren |
-| `/track` | Projektstatus aktualisieren |
-
 ### Selbst-Erweiterung
 Wenn der User etwas verlangt, das kein Skill abdeckt, und es wiederholbar ist:
 Frage: "Dafuer gibt es noch keinen Skill/Agent. Soll ich einen erstellen?"

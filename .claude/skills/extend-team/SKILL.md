@@ -1,6 +1,6 @@
 ---
 name: extend-team
-description: Analysiert eine neue Aufgabe und erstellt einen Entwurf fuer einen passenden Skill oder Agent. Entscheidet selbst, welche Abstraktion die richtige ist. Aufrufen mit einer Aufgabenbeschreibung.
+description: "Erstellt einen fertigen Entwurf (SKILL.md oder Agent-Datei) fuer eine neue Aufgabe. Entscheidet selbststaendig ob Skill oder Agent die richtige Abstraktion ist. Nicht fuer Ja/Nein-Entscheidungen ohne Dateierstellung."
 argument-hint: "[aufgabenbeschreibung]"
 allowed-tools: "Read, Glob, Grep"
 context: fork

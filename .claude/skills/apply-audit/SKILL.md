@@ -1,87 +1,42 @@
 ---
-name: migrate-team
-description: Fuehrt eine vollstaendige Migration eines bestehenden Agent-Teams durch. Analysiert erst (Audit mit aktueller Knowledge-Base), zeigt den Plan, und setzt nach User-OK alle Aenderungen um -- inklusive Backups, Safe Fixes, Skill-Konvertierungen, Pattern-Empfehlungen und CLAUDE.md-Update. Aufrufen mit dem Pfad zum Projektverzeichnis.
-argument-hint: "[projekt-pfad]"
+name: apply-audit
+description: "Wendet Audit-Ergebnisse auf ein Agent-Team an: Safe Fixes, Skill-Konvertierungen, Backups, CLAUDE.md-Updates. Nur nach vorherigem Audit verwenden. Fuehrt KEIN eigenes Audit durch."
+argument-hint: "[audit-ergebnisse und projekt-pfad]"
 allowed-tools: "Read, Glob, Grep, Write, Edit, Bash"
 context: fork
 model: sonnet
 ---
 
-Du fuehrst eine vollstaendige Team-Migration durch. Du arbeitest gruendlich, aber NICHTS passiert ohne explizites OK des Users.
+Du setzt Audit-Ergebnisse um. Du fuehrst KEIN eigenes Audit durch -- die Analyse kommt als Input.
 
-## Ablauf
+## GUARD CLAUSE
 
-Der gesamte Prozess hat zwei Phasen: ANALYSE (read-only) und UMSETZUNG (mit User-Bestaetigung).
+Wenn $ARGUMENTS leer ist oder keine konkreten Audit-Empfehlungen enthaelt (kein Projektpfad, keine Empfehlungen):
+→ Antworte: "Kein Audit-Ergebnis vorhanden. Zuerst das Team pruefen lassen."
+→ Beende sofort.
 
 ---
 
-## PHASE 0: KNOWLEDGE-BASE UND REFERENZMATERIAL LADEN
+## PHASE 0: KNOWLEDGE-BASE LADEN
 
-**Bevor du irgendetwas am Zielprojekt liest**, lade:
+**Bevor du am Zielprojekt arbeitest**, lade:
 1. Die Team-Building-Templates: `$CLAUDE_PROJECT_DIR/reference/team-building-templates.md`
 2. Die Knowledge-Base aus `$CLAUDE_PROJECT_DIR/knowledge/`. Nutze Glob um alle `*.md` Dateien dort zu finden, dann lies jede einzelne.
 
-Besonders relevant fuer Migrationen:
+Besonders relevant:
 - `token-optimization.md` -- Token-Sparstrategien, Modellwahl, 60/30/10 Mix
 - `entscheidungshierarchie.md` -- Skill vs. Agent Entscheidungsframework
 - `skill-best-practices.md` -- Fortgeschrittene Patterns, Skill-Suites
-- `session-state.md` -- Session-State-Management, Iceberg-Technik
 - `content-humanization.md` -- Anti-GPTism-Regeln (nur relevant wenn Content-Agents vorhanden)
-
-Dieses Wissen informiert alle folgenden Analyse- und Umsetzungs-Schritte.
 
 ---
 
-## PHASE 1: ANALYSE (read-only)
+## PHASE 1: UMSETZUNGSPLAN
 
-### 1.1 Team-Inventar
-
-Lies im Projektverzeichnis `$ARGUMENTS`:
-- `CLAUDE.md`
-- Alle `.claude/agents/*.md`
-- Alle `.claude/skills/*/SKILL.md` (falls vorhanden)
-- System-Prompt-Datei (falls auffindbar)
-- `scripts/` Verzeichnis
-
-### 1.2 Analyse pro Agent
-
-Fuer JEDEN Agent:
-
-**Pflichtfelder:**
-- `model`-Feld vorhanden? Welcher Wert?
-- `maxTurns`-Feld vorhanden?
-
-**Denkweise-Test:**
-1. Eigene Perspektive/Denkweise? (Ja/Nein + Beleg)
-2. Eigenstaendige Urteile? (Ja/Nein + Beleg)
-3. Breiter Kontext noetig? (Ja/Nein + Beleg)
-
-Ergebnis: 3x Ja = Agent bleibt, 2x Ja = Grenzfall, 0-1x Ja = Skill-Kandidat
-
-**Modell-Angemessenheit:**
-- Aktuelle Aufgabe vs. zugewiesenes/geerbtes Modell
-- Empfehlung: haiku / sonnet
-- Beziehe den 60/30/10 Modell-Mix ein (Masse-Tasks: Haiku, Mid-Tier: Sonnet, Review/Orchestrierung: Opus)
-
-### 1.3 Pattern-Analyse (Knowledge-basiert)
-
-Basierend auf dem Team-Inventar UND der Knowledge-Base, pruefe welche fortgeschrittenen Patterns dem Projekt nutzen wuerden. Empfehle NUR Patterns mit konkretem Mehrwert fuer DIESES Projekt:
-
-- **WAT-Framework:** Wuerden bestimmte Agents als Workflow+Tools besser funktionieren?
-- **Evaluation-Loops:** Gibt es Agents mit fehleranfaelligen Outputs, die von Grounding-Execution-Evaluation profitieren?
-- **Selbst-modifizierendes CLAUDE.md:** Wuerde das Projekt von akkumulierenden Regeln profitieren?
-- **Iceberg-Technik:** Laedt das Projekt zu viel beim Start?
-- **Sub-Agent Verification:** Gibt es kritische Outputs ohne Fresh-Context-Review?
-- **Prompt Contracts:** Gibt es subjektive Tasks ohne klare Definition of Done?
-- **Skill-Suites:** Gibt es verwandte Skills, die als Suite organisiert werden koennten?
-- **Content-Humanization:** Gibt es Content-Agents ohne Anti-GPTism-Regeln?
-
-### 1.4 Migrationsplan erstellen
-
-Erstelle den vollstaendigen Plan und zeige ihn dem User:
+Basierend auf den Audit-Ergebnissen in $ARGUMENTS, erstelle einen konkreten Umsetzungsplan. Lies dafuer das Zielprojekt (CLAUDE.md, Agents, Skills, Scripts), um die Empfehlungen in konkrete Datei-Aenderungen zu uebersetzen.
 
 ```
-# Migrationsplan: [Projektname]
+# Umsetzungsplan: [Projektname]
 
 ## Phase A: Safe Fixes (kein Risiko)
 Fehlende model/maxTurns-Felder einfuegen:
@@ -107,10 +62,8 @@ Falls das Projekt mehrere State-Dateien hat (status.md, todo.md, buildlog.md, et
 - Alte Dateien nach archive/ verschieben
 
 ## Phase E: Pattern-Integration (Knowledge-basiert)
-[Nur Patterns auflisten, die konkreten Mehrwert fuer dieses Projekt haben.
-Pro Pattern: Was, Warum, Wie umsetzen, geschaetzter Aufwand.]
-
-## Geschaetzte Gesamt-Einsparung: [N]%
+[Nur Patterns auflisten, die in den Audit-Ergebnissen empfohlen wurden.
+Pro Pattern: Was, Warum, Wie umsetzen.]
 
 ## Agents, die Agents bleiben (mit Begruendung)
 | Agent | Begruendung |
@@ -118,7 +71,7 @@ Pro Pattern: Was, Warum, Wie umsetzen, geschaetzter Aufwand.]
 | [name] | [Warum Agent und nicht Skill] |
 ```
 
-Dann frage: **"Hier ist der Migrationsplan. Soll ich ihn so umsetzen? Du kannst einzelne Punkte ablehnen oder aendern."**
+Dann frage: **"Hier ist der Umsetzungsplan. Soll ich ihn so umsetzen? Du kannst einzelne Punkte ablehnen oder aendern."**
 
 Warte auf explizites OK. Wenn der User Aenderungen will, passe den Plan an.
 
@@ -201,7 +154,7 @@ Falls das Projekt gar keine Statusdatei hat: Erstelle eine initiale `project-sta
 
 ### 2.6 Phase E: Pattern-Integration
 
-Setze die genehmigten Pattern-Empfehlungen aus dem Migrationsplan um. Pro Pattern:
+Setze die genehmigten Pattern-Empfehlungen aus dem Umsetzungsplan um. Pro Pattern:
 
 **Content-Humanization (falls genehmigt):**
 1. Kopiere `knowledge/content-humanization.md` aus `$CLAUDE_PROJECT_DIR/` ins Projekt
@@ -214,13 +167,13 @@ Setze die genehmigten Pattern-Empfehlungen aus dem Migrationsplan um. Pro Patter
 - Ergaenze den Main-Agent System Prompt: "Bei User-Korrekturen: Schreibe eine neue Regel in den 'Gelernte Regeln'-Abschnitt der CLAUDE.md"
 
 **Andere Patterns:**
-- Setze die konkreten Schritte um, die im Migrationsplan fuer jedes genehmigte Pattern beschrieben wurden
+- Setze die konkreten Schritte um, die im Umsetzungsplan fuer jedes genehmigte Pattern beschrieben wurden
 - Dokumentiere jede Aenderung fuer den Abschlussbericht
 
 ### 2.7 Abschlussbericht
 
 ```
-# Migration abgeschlossen: [Projektname]
+# Umsetzung abgeschlossen: [Projektname]
 Datum: [YYYY-MM-DD]
 Knowledge-Base: [N] Dateien als Grundlage verwendet
 

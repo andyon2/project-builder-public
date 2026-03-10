@@ -1,6 +1,6 @@
 ---
 name: convert-agent
-description: Liest einen bestehenden Agent und erstellt einen Skill-Entwurf als Alternative. Fasst den bestehenden Agent NICHT an. Aufrufen mit Projektpfad und Agent-Name.
+description: "Zeigt wie ein bestehender Agent als Skill aussehen wuerde. Erstellt einen Entwurf als Gedankenexperiment, aendert nichts. Nicht fuer vollstaendige Team-Umsetzungen (→ audit-team + apply-audit)."
 argument-hint: "[projekt-pfad] [agent-name]"
 allowed-tools: "Read, Glob, Grep"
 context: fork

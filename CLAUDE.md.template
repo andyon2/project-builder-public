@@ -7,7 +7,7 @@ Agent-Architektur-System: Entwirft und optimiert Claude-Code-Agent-Teams fuer ko
 Knowledge-Dateien in `knowledge/` sind Referenzmaterial -- NICHT bei Sessionstart laden.
 
 Wann laden:
-- Team-Building-Skills (`/extend-team`, `/audit-team`, `/migrate-team`) laden sie automatisch (Fork-Kontext)
+- Team-Building-Skills (`/extend-team`, `audit-team`, `apply-audit`) laden sie automatisch (Fork-Kontext)
 - Bei Architektur-Fragen: relevante Datei(en) gezielt lesen
 - `/learn` aktualisiert sie
 
@@ -41,26 +41,28 @@ project-builder/
 
 ## Skills
 
+### User-Befehle
 | Skill | Aufgabe |
 |-------|---------|
+| `/track` | Projektstatus aktualisieren (inline) |
 | `/learn [alle\|notion\|lokal\|datei]` | Wissensquellen integrieren (Notion + lokal) |
-| `/build-team [brief]` | Alle Dateien fuer neues Team erstellen (nach Anforderungsklaerung) |
-| `/extend-team [aufgabe]` | Neuen Skill/Agent entwerfen (inkl. Skill-Suite-Pruefung) |
-| `/skill-or-agent [aufgabe]` | Schnelle Entscheidungshilfe: Skill oder Agent? |
-| `/audit-team [pfad]` | Agent-Team auf Best Practices pruefen |
-| `/audit-content [pfad]` | Texte/Code auf KI-erkennbare Muster pruefen |
-| `/migrate-team [pfad]` | Vollstaendige Team-Migration durchfuehren |
-| `/convert-agent [pfad] [name]` | Agent-zu-Skill-Konvertierung entwerfen |
-| `/apply-safe-fixes [pfad]` | Fehlende model/maxTurns-Felder einfuegen |
-| `/deploy-content-audit [pfad]` | Content-Audit in bestehendes Projekt einpflanzen |
-| `/reflect` | Team-Selbstanalyse erstellen (Pflicht-Skill fuer jedes Team) |
-| `/research-updates [thema]` | Aktuelle Entwicklungen recherchieren |
-| `/track` | Aktualisiert project-status.md mit Architektur-Entscheidungen, Meta-Learnings, offenen Punkten (inline) |
+
+### Agent-geroutet
+| Skill | Aufgabe |
+|-------|---------|
+| `audit-team` | Agent-Team auf Best Practices analysieren (read-only) |
+| `apply-audit` | Audit-Ergebnisse anwenden (Safe Fixes, Konvertierungen, Backups) |
+| `build-team` | Alle Dateien fuer neues Team erstellen |
+| `extend-team` | Neuen Skill/Agent entwerfen |
+| `audit-content` | Texte/Code auf KI-erkennbare Muster pruefen |
+| `reflect` | Team-Selbstanalyse (mit Prinzip-Konsistenz-Check) |
+| `convert-agent` | Agent als Skill durchspielen (Gedankenexperiment) |
+| `research-updates` | Aktuelle Entwicklungen im Web recherchieren |
 
 ## Konventionen
 
 - Sprache: Deutsch fuer Dokumentation, Englisch fuer Code
-- Umlaute: ae/oe/ue statt ae/oe/ue in allen generierten Dateien
+- Umlaute: ae/oe/ue in technischen Dateien (Prompts, Skills, Knowledge, Code). ä/ö/ü in Endnutzer-Dokumentation (README, öffentliche Texte).
 - Wissen wird verdichtet, nicht gesammelt (Verdichtungs-Logik in /learn)
 - Widersprueche explizit in `knowledge/widersprueche.md` tracken
 - **Fremde Repos nicht anfassen:** Dateien in anderen Projekten darfst du editieren, aber NIE committen oder pushen. Git-Operationen (commit, push, pull) macht der jeweilige Projekt-Agent selbst. Wenn ein Push noetig ist, sage dem User: "Starte den Agent in [Projekt] und lass ihn committen und pushen."

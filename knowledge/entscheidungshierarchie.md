@@ -82,7 +82,7 @@ Nicht jedes Team braucht einen Strategy-Agent -- aber jedes Team, das ein **verk
 
 | Muster | Wann | Beispiel |
 |--------|------|----------|
-| **Main-Agent IST der Stratege** | Strategie/Positionierung ist der Projektzweck | KI-Berater (Career Strategist), ConTaktArt (Creative Director) |
+| **Main-Agent IST der Stratege** | Strategie/Positionierung ist der Projektzweck | Beratungs-Team (Career Strategist), Content-Team (Creative Director) |
 | **Separater Strategy-Agent** | Main-Agent ist primaer technisch/operativ, Produkt wird aber vermarktet | Software-Produkt mit Tech Lead als Main-Agent |
 | **Kein Strategie-Bedarf** | Reines Infrastruktur-/Tooling-Projekt ohne Vermarktung | Build-Pipeline, interne Automation |
 
@@ -130,7 +130,7 @@ Der Denkweise-Test:
 Diese Frage gehoert in Schritt 1 (Anforderungen klaeren) des Architektur-Entwurfs. Nicht optional -- aktiv stellen.
 
 ### Quellen
-- Analyse der bestehenden Teams ki-berater, contaktart, dikta (2026-03-09) -- Muster-Erkennung: Strategie-Besitz korreliert mit Projekt-Typ
+- Analyse bestehender Teams (2026-03-09) -- Muster-Erkennung: Strategie-Besitz korreliert mit Projekt-Typ
 
 ## Deployment-Determinismus als Designziel
 

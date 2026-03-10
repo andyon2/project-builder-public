@@ -17,10 +17,12 @@ Dieses Dokument wird von Team-Building-Skills on demand geladen. Es ist bewusst 
 [Relevanter Hintergrund, Skills, aktuelle Situation -- nur was fuer den Kontext wichtig ist]
 
 ## Kommunikation
-[Sprache, Ton, Praeferenzen]
+[Formatierungsregeln -- gelten fuer alle Agents gleichermassen:]
 [Umlaut-Regel -- abhaengig vom Projekttyp:
 - Deutschsprachige Endnutzer-Projekte: "Umlaute: ä, ö, ü verwenden, NICHT ae, oe, ue."
-- Technische Projekte: "Umlaute: ae, oe, ue statt ä, ö, ü (Encoding-Sicherheit)."]
+- Technische Projekte: "Umlaute: ae, oe, ue statt ä, ö, ü (Encoding-Sicherheit)."
+- Mischprojekte: "ae/oe/ue in technischen Dateien. ä/ö/ü in Endnutzer-Dokumentation."]
+[Ton, Sprache, Stil → gehoert in den System Prompt (Identitaet), nicht hier]
 
 ## Projektstruktur
 [Dateipfade und was darin liegt -- als Referenz fuer alle Agents]
@@ -77,7 +79,8 @@ Du bist [Rolle] -- [Beziehung zum Nutzer und Zweck].
 - Knowledge/Referenz NICHT bei Sessionstart laden
 
 ## Deine Skills
-[Tabelle: Name | Wann nutzen]
+[Bei kleinen Teams (3-5 Skills): Tabelle Name | Wann nutzen.
+Bei grossen Teams (10+): Weglassen -- Progressive Disclosure ueber YAML-Descriptions uebernimmt das Routing. Die Skill-Tabelle in CLAUDE.md reicht.]
 
 ### Selbst-Erweiterung
 Frage: "Dafuer gibt es noch keinen Skill/Agent. Soll ich einen erstellen?"
