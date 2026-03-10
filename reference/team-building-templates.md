@@ -414,6 +414,7 @@ Main-Agent, [Datum]
 - `scripts/[agent-name]` (fuer dialogische Agents)
 - `project-status.md` (initial)
 - `briefings/` (mit .gitkeep)
+- `config/` (optional, mit .gitkeep) -- Instanz-spezifische Integrationen (Server-Zugang, API-Configs). In .gitignore, On-Demand gelesen. Referenz in CLAUDE.md.
 - `.gitignore`
 
 ### Schritt 3b: Git-Repository einrichten
