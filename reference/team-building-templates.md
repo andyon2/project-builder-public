@@ -46,7 +46,8 @@ Zentrale Dateien:
 | /[name] | [Beschreibung] | inline |
 
 ## Regeln
-[Uebergreifende Regeln, die fuer alle Agents gelten]
+[Uebergreifende Regeln, die fuer alle Agents gelten. Mindestens diese Standard-Regel:]
+- **Rueckwaerts-Suche bei Umbau:** Vor dem ersten Edit bei strukturellen Aenderungen: `grep -r` nach allen Konsumenten des Geaenderten. Erst dann editieren. Strukturell = Entfernen, Umbenennen, Output-Format aendern, Verantwortlichkeit zwischen Komponenten verschieben. Nicht strukturell = Hinzufuegen, Erweitern, neue Datei anlegen.
 ```
 
 **Laenge:** Ziel <100 Zeilen. Keine Templates, keine Prozeduren, keine historischen Entscheidungen. Nur Fakten und Struktur.
@@ -77,6 +78,7 @@ Du bist [Rolle] -- [Beziehung zum Nutzer und Zweck].
 - Zwischenergebnisse in Dateien, nicht im Chat
 - Direkte Sessions bei explorativen Dialogen (>5 Interaktionen)
 - Knowledge/Referenz NICHT bei Sessionstart laden
+- Wenn der User eine Aufgabe bringt die nicht vom bisherigen Session-Kontext profitiert: Neue Session vorschlagen. Eine frische Session mit vollem Kontextfenster ist oft besser als eine ueberfuellte.
 
 ## Deine Skills
 [Bei kleinen Teams (3-5 Skills): Tabelle Name | Wann nutzen.
@@ -341,6 +343,34 @@ Wenn ein Agent eigentlich ein Skill sein sollte:
 2. Trifft er eigenstaendige Urteile oder folgt er einem Workflow?
 3. Wenn beides Nein → Konvertiere: Body kuerzen, Workflow-fokussiert, fork/haiku, "Wer du bist" und Eskalation entfallen.
 
+### Hooks und Permissions
+
+Permissions werden **global** gehandhabt -- nicht pro Projekt.
+
+**Globaler Safety-Hook** (`~/.claude/hooks/safety-hook.sh`):
+- **deny:** `git push --force`, `rm -rf`, `git reset --hard`, `git clean -f`, `git checkout -- .`, `git restore .`
+- **ask:** `.env`-Zugriff, Commits in fremden Repos
+- **allow:** alles andere
+
+Registriert in `~/.claude/settings.json` (global). Gilt fuer alle Projekte auf allen Maschinen.
+
+**Lokale `.claude/settings.json`:** Nur fuer projektspezifische Hooks (z.B. SessionStart-Hooks, Compaction-Reminder). Keine Permissions -- die deckt der globale Hook ab.
+
+```json
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "compact",
+        "hooks": [{"type": "command", "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-compaction-reminder.sh"}]
+      }
+    ]
+  }
+}
+```
+
+Neue Teams bekommen **keine** lokale `settings.json`, ausser sie brauchen projektspezifische Hooks.
+
 ### Briefings (in `briefings/`)
 ```markdown
 # Briefing: [Agent-Name] -- [Thema]
@@ -416,6 +446,7 @@ Main-Agent, [Datum]
 - `briefings/` (mit .gitkeep)
 - `config/` (optional, mit .gitkeep) -- Instanz-spezifische Integrationen (Server-Zugang, API-Configs). In .gitignore, On-Demand gelesen. Referenz in CLAUDE.md.
 - `.gitignore`
+- `.claude/settings.json` nur wenn projektspezifische Hooks noetig (keine Permissions -- globaler Hook deckt das ab)
 
 ### Schritt 3b: Git-Repository einrichten
 1. `git init`
@@ -453,4 +484,6 @@ Falls kein SSH-Zugang vom Build-Rechner besteht, dem User die Befehle ausgeben.
 - Git ist Infrastruktur: Private Repo, .gitignore, Starter-Scripts mit Git-Sync-Check
 - Umlaut-Regel ist Pflicht in CLAUDE.md
 - `/reflect` ist Pflicht in jedem Team
+- **Rueckwaerts-Suche bei Umbau ist Pflicht in jeder CLAUDE.md:** Standard-Regel fuer alle Teams (siehe CLAUDE.md-Template)
 - **Immer-geladene Dateien schlank halten:** CLAUDE.md <100 Zeilen, System Prompt <200 Zeilen, project-status.md <50 Zeilen. Referenzmaterial in On-Demand-Dateien.
+- **Keine lokalen Permissions:** Globaler Safety-Hook regelt deny/ask/allow. Lokale settings.json nur fuer projektspezifische Hooks.

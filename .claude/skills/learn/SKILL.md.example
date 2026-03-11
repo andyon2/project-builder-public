@@ -218,12 +218,12 @@ Quelle: [archivname] ([datum])
 
 [3-5 Bullet Points: konkrete, verwertbare Erkenntnisse fuer dieses Team]
 
-Vollstaendige Quelle: ~/project-builder/sources/archive/[monat]/[archivname]
+Vollstaendige Quelle: ~/claude-projects/project-builder/sources/archive/[monat]/[archivname]
 ```
 
 2. Trage eine Zeile in `dispatches.md` ein (unter `## Offene Dispatches`):
 ```
-- [ ] | YYYY-MM-DD | [team-name] | [Titel] | dispatches/[team-name]/YYYY-MM-DD_[slug].md
+- [ ] | YYYY-MM-DD | [team-name] | [Titel] | ../project-builder/dispatches/[team-name]/YYYY-MM-DD_[slug].md
 ```
 
 → **NICHT** in `knowledge/` verdichten. Schritt 3 ueberspringen fuer diese Erkenntnis.

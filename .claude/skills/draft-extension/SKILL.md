@@ -109,6 +109,9 @@ Liefere den vollstaendigen Entwurf im Chat. Format:
 [Datei: Pfad]
 [Inhalt]
 
+### Betroffene bestehende Elemente (Rueckwaerts-Check)
+[Welche bestehenden Skills, Agents, Templates oder Configs referenzieren das, was durch diesen Entwurf geaendert, ersetzt oder verschoben wird? Grep-Ergebnisse angeben. Falls reine Ergaenzung ohne Interface-Aenderung: "Keine -- reine Ergaenzung."]
+
 ### Aenderungen an CLAUDE.md
 [Welche Zeile in der Agent- oder Skill-Tabelle ergaenzt werden muesste]
 

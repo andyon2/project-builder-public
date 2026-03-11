@@ -147,6 +147,31 @@ Ein verbreiteter Irrtum: Agentic Workflows seien im Deployment selbst-heilend. D
 
 **Abgrenzung:** Skills die lokal vom User getriggert werden (mit aktivem Agenten) koennen flexibler sein. Workflows die autonom laufen muessen maximal deterministisch sein.
 
+## Verhaltensaenderung vs. Systemerweiterung
+
+[Neu: 2026-03-11]
+
+Nicht jedes Problem braucht einen neuen Skill oder Agent. Manche Probleme sind **fehlende Trigger**, nicht fehlendes Wissen.
+
+**Erkennungsfrage:** "Wusste der Agent, was er haette tun sollen?" Wenn ja → kein Skill, sondern ein Bedingungssatz in CLAUDE.md. Wenn nein → Skill oder Knowledge.
+
+**Bedingungssaetze als Encoding-Form:** Ein `if-then` mit klarem Trigger-Wort in CLAUDE.md `## Regeln`. Muss eng genug sein um nicht ignoriert zu werden, breit genug um alle Faelle zu fangen. Beispiel:
+
+> Vor dem ersten Edit bei strukturellen Aenderungen: `grep -r` nach allen Konsumenten des Geaenderten. Erst dann editieren. Strukturell = Entfernen, Umbenennen, Output-Format aendern, Verantwortlichkeit zwischen Komponenten verschieben.
+
+**Wann Bedingungssatz, wann Skill:**
+
+| Situation | Loesung |
+|-----------|---------|
+| Agent vergisst einen Schritt, den er kennt | Bedingungssatz (Trigger) |
+| Agent weiss nicht, wie er etwas tun soll | Skill (Workflow) |
+| Agent braucht eigenes Urteilsvermoegen | Agent |
+| Agent macht es richtig, aber zu langsam | Hilfsskript |
+
+**Schluessel-Insight: Hinzufuegen ≠ Umbauen.** Agents denken vorwaerts ("Was muss ich erstellen?"), nicht rueckwaerts ("Was konsumiert das, was ich aendere?"). Bei Neubau (neuer Skill, neue Datei) ist vorwaerts ausreichend. Bei Umbau (Entfernen, Verschieben, Interface-Aenderung) ist Rueckwaerts-Suche Pflicht.
+
+[Quelle: Architektur-Dialog mit bestehendem Review-Team, 2026-03-11 -- aus konkretem Fall: Verantwortlichkeit zwischen Agents verschoben, abhängiger Skill nicht angepasst]
+
 ## Quellen
 - Rendle-Architektur (v3-v5) -- Grundlegende Hierarchie, Denkweise-Test
 - improved-skill.md (2026-03-06) -- Grenzfaelle Agent-zu-Skill, Team-Kompositionsregeln

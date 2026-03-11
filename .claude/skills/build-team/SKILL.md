@@ -92,3 +92,4 @@ Bevor du das Ergebnis zurueckgibst:
 - [ ] Umlaut-Regel in CLAUDE.md?
 - [ ] Kein Referenzmaterial in immer-geladenen Dateien?
 - [ ] .gitignore schliesst Secrets aus?
+- [ ] Rueckwaerts-Suche-Regel in CLAUDE.md `## Regeln`?

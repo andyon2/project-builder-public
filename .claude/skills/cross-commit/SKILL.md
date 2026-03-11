@@ -1,6 +1,6 @@
 ---
 name: cross-commit
-description: Committed und pusht uncommitted Aenderungen in allen fremden Repos aus teams.md (nur Repos mit PB-Commit=ja). Nur auf expliziten User-Befehl. Committet NUR bereits getrackte Dateien (git add -u), keine untracked files.
+description: Committed und pusht uncommitted Aenderungen in allen fremden Repos aus teams.md (nur Repos mit PB-Managed=ja), dann pullt auf dem Server. Nur auf expliziten User-Befehl. Committet NUR bereits getrackte Dateien (git add -u), keine untracked files.
 argument-hint: "[commit message]"
 context: fork
 model: haiku
@@ -30,10 +30,10 @@ git -C /pfad/zum/repo status --porcelain
 
 Interpretiere das Ergebnis:
 - Zeilen mit `M`, `D`, `R` im ersten oder zweiten Zeichen: getrackte Aenderungen (relevant)
-- Zeilen mit `??`: untracked files (IGNORIEREN)
+- Zeilen mit `??`: untracked files (NICHT committen, aber fuer Warnung merken)
 - Repo nicht vorhanden oder kein Git-Repo: Notieren, ueberspringen
 
-Sammle: Liste der Repos MIT Aenderungen (nur getrackte), Liste der Repos ohne Aenderungen, Liste der Repos die nicht gefunden wurden.
+Sammle: Liste der Repos MIT Aenderungen (nur getrackte), Liste der Repos ohne Aenderungen, Liste der Repos die nicht gefunden wurden, Liste der Repos mit untracked files.
 
 ## Schritt 3: Committen und Pushen
 
@@ -50,7 +50,23 @@ Fehlerbehandlung:
 - Push schlaegt fehl: Warnung ausgeben, naechstes Repo
 - Nie abbrechen wegen eines einzelnen Fehlers
 
-## Schritt 4: Ergebnis-Report
+## Schritt 4: Server-Sync
+
+Nach erfolgreichem Push: Lies `config/server.md` fuer die Server-Konfiguration.
+
+Fuer jedes erfolgreich gepushte Repo: Pruefe ob es auf dem Server existiert und pullen:
+
+```bash
+ssh my-server "cd ~/claude-projects/[projekt] && git pull --ff-only origin main" 2>&1
+```
+
+Regeln:
+- Nur Repos die in Schritt 3 erfolgreich gepusht wurden
+- `--ff-only` verwenden — bei Divergenz Warnung ausgeben, NICHT force-pullen
+- SSH-Fehler (Timeout, Connection refused): Warnung, nicht abbrechen
+- Server nicht erreichbar: Gesamten Sync-Schritt ueberspringen mit Hinweis
+
+## Schritt 5: Ergebnis-Report
 
 ```
 ## Cross-Commit Ergebnis
@@ -58,5 +74,14 @@ Fehlerbehandlung:
 **Erfolgreich:** ~/projekt-a, ~/projekt-b (je 1 Datei)
 **Fehlgeschlagen:** ~/projekt-e (Push fehlgeschlagen)
 **Uebersprungen:** ~/projekt-c, ~/projekt-d (keine Aenderungen)
-**Nicht berechtigt:** ~/projekt-f (PB-Commit=nein)
+**Nicht berechtigt:** ~/projekt-f (PB-Managed=nein)
+
+**Server-Sync (my-server):**
+  ✓ projekt-a, projekt-b (gepullt)
+  ✗ projekt-e (Divergenz — manuell loesen)
+  — projekt-c (nicht gepusht, kein Sync)
+
+**⚠ Untracked files (nicht committed!):**
+  ~/projekt-a: scripts/new-script, .claude/agents/new-agent.md
+  ~/projekt-b: (keine)
 ```

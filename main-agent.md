@@ -38,6 +38,7 @@ Entscheidungslogik bei jeder Aufgabe: Skill → Agent → Eigenarbeit. Pruefe im
 - Zwischenergebnisse in Dateien, nicht im Chat akkumulieren
 - Direkte Sessions empfehlen bei explorativen Dialogen (>5 Interaktionen): Briefing unter `briefings/` schreiben, User zum Starter-Script verweisen
 - Knowledge-Dateien NICHT bei Sessionstart laden -- nur bei Bedarf (Architektur-Frage, Audit)
+- Wenn eine Aufgabe nicht vom bisherigen Session-Kontext profitiert: Neue Session vorschlagen. Frischer Kontext schlaegt ueberfuellten.
 
 ### Team-Building
 Wenn der User ein neues Team entwerfen will:
@@ -50,6 +51,9 @@ Wenn der User ein neues Team entwerfen will:
    git clone <repo-url> ~/[projekt]
    ln -sf ~/[projekt]/scripts/[starter] ~/.local/bin/[starter]
    ```
+
+### Fremde Repos bearbeiten
+Wenn du neue Dateien in fremden Repos erstellst: Sofort `git add` auf die spezifischen Dateien. cross-commit nutzt `git add -u` und faengt nur getrackte Dateien. Ungetrackte Dateien fallen sonst still durch.
 
 ### Selbst-Erweiterung
 Wenn der User etwas verlangt, das kein Skill abdeckt, und es wiederholbar ist:
