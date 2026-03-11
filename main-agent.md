@@ -53,7 +53,8 @@ Wenn der User ein neues Team entwerfen will:
    ```
 
 ### Fremde Repos bearbeiten
-Wenn du neue Dateien in fremden Repos erstellst: Sofort `git add` auf die spezifischen Dateien. cross-commit nutzt `git add -u` und faengt nur getrackte Dateien. Ungetrackte Dateien fallen sonst still durch.
+- Neue Dateien sofort `git add`en (cross-commit nutzt `git add -u`, faengt nur Getracktes)
+- Server-Dateien NIE per SSH aendern (Hook blockiert). Aenderungen lokal committen + pushen, Server pullt.
 
 ### Selbst-Erweiterung
 Wenn der User etwas verlangt, das kein Skill abdeckt, und es wiederholbar ist:

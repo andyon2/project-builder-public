@@ -20,6 +20,8 @@ Project Builder löst das durch eine Architektur-Philosophie (das "Rendle-Prinzi
 
 **Content prüfen:** Findet KI-erkennbare Muster in Texten (GPTisms, Claude-typische Formulierungen, strukturelle Tells) und gibt konkrete Fix-Vorschläge.
 
+**Über Repos hinweg arbeiten:** `/cross-commit` committet und pusht Änderungen in allen verwalteten Projekten auf einmal. Der Agent weiß, welche Repos er verwaltet und welche nicht.
+
 ## Architektur: Das Rendle-Prinzip
 
 Sechs Säulen, die jedes Team durchziehen:
@@ -36,6 +38,16 @@ Sechs Säulen, die jedes Team durchziehen:
 
 6. **Skill-First.** Jede Aufgabe startet als Skill-Kandidat. Agent nur bei eigenem Urteilsvermögen. "Braucht das wirklich einen Agent?" ist die erste Frage.
 
+### Rückwärts-Suche bei Umbau
+
+Hinzufügen und Umbauen sind fundamental verschiedene Operationen. Beim Hinzufügen (neuer Skill, neue Datei) reicht vorwärts denken: "Was muss ich erstellen?" Beim Umbau (Entfernen, Umbenennen, Verantwortlichkeit verschieben) ist Rückwärts-Suche Pflicht: "Was konsumiert das, was ich gerade ändere?"
+
+Jedes Team bekommt diese Regel in seiner CLAUDE.md:
+
+> Vor dem ersten Edit bei strukturellen Änderungen: `grep -r` nach allen Konsumenten des Geänderten. Erst dann editieren.
+
+Nicht jedes Problem braucht einen neuen Skill. Manchmal fehlt dem Agent nur der Auslöser im richtigen Moment -- dann reicht ein Bedingungssatz in CLAUDE.md statt eines neuen Workflows.
+
 ## Drei Schutzschichten
 
 Agent-Teams vergessen ihre Regeln. Je länger eine Session, desto stärker verdünnt sich der System Prompt. Dagegen gibt es drei Schichten:
@@ -46,9 +58,19 @@ Agent-Teams vergessen ihre Regeln. Je länger eine Session, desto stärker verd�
 | **Skills** | Workflows ausführen | Nein (frisch geladen bei Aufruf) |
 | **Hooks** | Harte Schranken + Erinnerungen | Nein (extern, kein LLM) |
 
-**Command-Hooks sind Gesetze.** Ein Shell-Script das deterministisch blockt. Kein LLM-Call, kein Vergessen, kein Interpretieren. Beispiel: Der Foreign-Commit-Hook verhindert, dass der Agent in fremden Repos committet -- egal wie lang die Session ist.
+### Globaler Safety-Hook
 
-**Post-Compaction-Reminder.** Wenn das Kontextfenster voll wird, komprimiert Claude automatisch den älteren Kontext. Ein Hook injiziert danach die fünf kritischsten Prinzipien zurück -- die, die am stärksten driften.
+Ein Shell-Script das deterministisch prüft und blockt. Drei Stufen:
+
+- **deny:** `git push --force`, `rm -rf`, `git reset --hard`, `git clean -f` -- sofort blockiert, keine Rückfrage
+- **ask:** `.env`-Zugriff, Commits in fremden Repos -- Bestätigung erforderlich
+- **allow:** alles andere
+
+Registriert in `~/.claude/settings.json`, gilt für alle Projekte auf allen Maschinen. Kein LLM-Call, kein Vergessen, kein Interpretieren.
+
+### Post-Compaction-Reminder
+
+Wenn das Kontextfenster voll wird, komprimiert Claude automatisch den älteren Kontext. Ein Hook injiziert danach die kritischsten Prinzipien zurück -- die, die am stärksten driften.
 
 ## Das Selbstentwicklungs-Paradox
 
@@ -71,12 +93,13 @@ Sag dem Agent was du willst -- er wählt den richtigen Skill:
 - *"Setz die Empfehlungen um"*
 - *"Dieser Text klingt zu sehr nach KI"*
 
-Zwei Befehle rufst du selbst auf:
+Befehle die du selbst aufrufst:
 
 | Befehl | Wann |
 |--------|------|
 | `/track` | Sessionende: Projektstatus sichern |
 | `/learn` | Neue Wissensquellen integrieren |
+| `/cross-commit` | Änderungen in verwalteten Repos committen + pushen |
 
 ## Setup
 
@@ -117,7 +140,7 @@ project-builder/
   reference/                   # On-Demand-Referenzmaterial
   sources/inbox/               # Neue Wissensquellen hier ablegen
   scripts/                     # Starter-Script, Tests, Hilfsskripte
-  .claude/skills/              # 10 Skills
+  .claude/skills/              # 11 Skills
   .claude/hooks/               # Deterministische Sicherheits-Hooks
 ```
 
@@ -129,11 +152,49 @@ Verdichtetes Wissen zu KI-Agent-Architektur. Wird über `/learn` aktualisiert, n
 |-------|-------|
 | `skill-best-practices.md` | Wann und wie Skills einsetzen |
 | `token-optimization.md` | Token-Sparstrategien für Agent-Teams |
-| `entscheidungshierarchie.md` | Skill vs. Agent: Entscheidungsbaum |
+| `entscheidungshierarchie.md` | Skill vs. Agent: Entscheidungsbaum + Verhaltensänderung vs. Systemerweiterung |
 | `session-state.md` | Statusdateien, Hooks, Context Loading |
 | `content-humanization.md` | Anti-GPTism-Regeln, Wort-Blacklists |
 | `self-evolution-paradox.md` | Selbstentwicklung vs. Selbstkonsistenz |
 | `widersprueche.md` | Offene Konflikte zwischen Quellen |
+
+## Für Fortgeschrittene
+
+### Multi-Environment-Workflow
+
+Agent-Teams können auf mehreren Maschinen laufen (lokal + Server). Git ist das einzige Sync-Medium -- kein SSH-Sync, keine geteilten Dateisysteme.
+
+```
+Lokal:   Sessionstart → git pull → arbeiten → commit → push
+Server:  Sessionstart → git pull → arbeiten → commit → push
+```
+
+Jeder Agent ist selbst dafür verantwortlich, bei Sessionstart den neuesten Stand zu holen. Das Script im Starter fragt automatisch, ob gepullt werden soll, wenn der Remote neuere Commits hat.
+
+**Umgebungserkennung:** Eine Datei `~/.environment` (Inhalt: `local` oder `server`) sagt dem Agent, wo er läuft. Einmal pro Maschine gesetzt, außerhalb aller Repos.
+
+**Unified Starter Scripts:** Ein Script pro Team, das als Argument die Rolle annimmt (`./scripts/mein-team reviewer`). Ohne Argument zeigt es die verfügbaren Rollen. So startet man auf jeder Maschine gleich.
+
+### Dispatch-System: Wissen zwischen Teams routen
+
+Wenn `/learn` eine Quelle verarbeitet, kann das Wissen für mehrere Teams relevant sein. Das Dispatch-System routet Erkenntnisse an die richtigen Empfänger:
+
+```
+Quelle → /learn → Routing:
+  KI-Architektur    → eigene knowledge/
+  Für anderes Team  → dispatches/[team-name]/
+  Beides            → knowledge/ + Dispatch
+```
+
+Jedes Team hat ein Verzeichnis unter `dispatches/`. Bei Sessionstart prüft der Ziel-Agent, ob neue Dispatches vorliegen. Eine zentrale `dispatches.md` trackt, welche gelesen und welche offen sind.
+
+**Routing-Tabelle:** `teams.md` definiert pro Team die Wissensgebiete. `/learn` matcht Erkenntnisse gegen diese Gebiete und routet automatisch.
+
+### Cross-Commit: Mehrere Repos gleichzeitig verwalten
+
+`/cross-commit` iteriert über alle verwalteten Repos (aus `teams.md`), committet ausstehende Änderungen und pusht. Nützlich wenn der Project Builder Dateien in mehreren fremden Repos geändert hat (z.B. nach einem Dispatch-Rollout oder einem Framework-Update).
+
+Wichtig: Committet nur bereits getrackte Dateien (`git add -u`). Neue Dateien müssen vorher explizit `git add`-ed werden -- der Agent warnt, wenn untracked Files vorliegen.
 
 ## Lizenz
 
