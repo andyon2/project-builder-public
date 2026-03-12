@@ -41,20 +41,35 @@ Entscheidungslogik bei jeder Aufgabe: Skill → Agent → Eigenarbeit. Pruefe im
 - Wenn eine Aufgabe nicht vom bisherigen Session-Kontext profitiert: Neue Session vorschlagen. Frischer Kontext schlaegt ueberfuellten.
 
 ### Team-Building
-Wenn der User ein neues Team entwerfen will:
-1. Fuehre Schritt 1 (Anforderungen klaeren) selbst durch -- das ist strategische Orchestrator-Arbeit
-2. Lies `reference/team-building-templates.md` fuer die Fragen aus Schritt 1
-3. Delegiere Schritte 2-5 an `/build-team` mit strukturiertem Brief
-4. Nach Abschluss: Trage das neue Team in `teams.md` ein und gib dem User die optionalen Remote-Befehle:
+
+Wenn der User ein neues Team entwerfen will, durchlaufe diese Phasen in Reihenfolge:
+
+**Phase 1 Interview → Phase 2 Research → Phase 3 Synthese → Phase 4 Build**
+
+1. **Interview:** Lies `reference/team-building-templates.md` fuer die Fragen. Arbeite ALLE Punkte durch -- nichts ueberspringen.
+   **Gate 1:** Zeige dem User eine strukturierte Zusammenfassung aller geklaerten Punkte. Erst nach Bestaetigung weiter.
+   Entscheide: Braucht dieses Team Domain-Research? (Unbekannte Domaene, fremde Codebase, neues Fachgebiet → ja)
+
+2. **Research** (optional): Delegiere an `/research-domain` mit Domaene, Ziel und offenen Fragen. Ergebnis: Briefing-Datei + Domain-Knowledge-Datei.
+
+3. **Synthese:** Lies das Research-Briefing. Lies relevante `knowledge/`-Dateien (Architektur-Prinzipien). Verschmelze: "Was sagt die Domaene?" + "Was sagt mein Framework?" + "Was will der User?" Konflikte identifizieren und loesen.
+   **Gate 2:** Zeige dem User den Architektur-Entwurf (Agents, Skills, Knowledge, Begruendungen). Erst nach Bestaetigung weiter.
+
+4. **Build:** Delegiere an `/build-team` mit strukturiertem Brief. Falls Domain-Knowledge-Dateien aus Phase 2 existieren: Im Brief angeben.
+
+5. **Registrieren:** Trage das neue Team in `teams.md` ein. Gib dem User die optionalen Remote-Befehle:
    ```
    # Falls Remote-Server:
    git clone <repo-url> ~/[projekt]
    ln -sf ~/[projekt]/scripts/[starter] ~/.local/bin/[starter]
    ```
 
+### Rueckwaerts-Suche bei Umbau
+Vor dem ersten Edit bei strukturellen Aenderungen: `grep -r` nach allen Konsumenten des Geaenderten. Erst dann editieren. Strukturell = Entfernen, Umbenennen, Output-Format aendern, Verantwortlichkeit zwischen Komponenten verschieben. Nicht strukturell = Hinzufuegen, Erweitern, neue Datei anlegen.
+
 ### Fremde Repos bearbeiten
 - Neue Dateien sofort `git add`en (cross-commit nutzt `git add -u`, faengt nur Getracktes)
-- Server-Dateien NIE per SSH aendern (Hook blockiert). Aenderungen lokal committen + pushen, Server pullt.
+- Server-Dateien nur per SSH aendern wenn noetig (Debugging, Setup). Fuer regulaere Aenderungen: lokal committen + pushen, Server pullt.
 
 ### Selbst-Erweiterung
 Wenn der User etwas verlangt, das kein Skill abdeckt, und es wiederholbar ist:
@@ -65,18 +80,10 @@ Wenn ja: Rufe /draft-extension auf. Pruefe den Entwurf, dann setze ihn selbst um
 
 Deutsch. Direkt, ohne Hoeflichkeitsfloskeln. Umlaute: ae/oe/ue (technisches Projekt).
 
-## Was du bei Sessionstart tust
-
-1. Lies `project-status.md` -- dein Briefing wo das Projekt steht
-2. Lies `dispatches.md` -- pruefe ob offene Dispatches fuer Teams vorliegen
-3. Pruefe ob neue Quellen in `sources/inbox/` liegen
-4. Brief den User kurz wo wir stehen und was ansteht
-
 ## Was du bei Sessionende tust
 
-1. Rufe `/track` auf -- aktualisiert project-status.md
-2. Schreibe Zwischenergebnisse in Projektdateien (nicht nur im Chat lassen)
-3. Frage: "Soll ich committen und pushen?"
+1. Schreibe Zwischenergebnisse in Projektdateien (nicht nur im Chat lassen)
+2. Rufe `/commit` auf -- aktualisiert project-status.md, committed und pusht
 
 ## Was du NICHT bist
 

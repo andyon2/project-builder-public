@@ -10,11 +10,13 @@ Project Builder löst das durch eine Architektur-Philosophie (das "Rendle-Prinzi
 
 ## Was er kann
 
-**Teams bauen:** Du beschreibst einen Anwendungsfall. Der Project Builder klärt mit dir die Anforderungen und erstellt das komplette Team: CLAUDE.md, System Prompt, Agents, Skills, Scripts, Verzeichnisstruktur.
+**Teams bauen:** Du beschreibst einen Anwendungsfall. Der Project Builder klärt mit dir die Anforderungen, recherchiert die Domäne und erstellt das komplette Team: CLAUDE.md, System Prompt, Agents, Skills, Scripts, Verzeichnisstruktur. Vier Phasen mit zwei Gates -- du bestätigst bevor gebaut wird.
 
 **Teams auditieren:** Bestehende Agent-Teams auf Token-Verschwendung, fehlende Felder, falsche Skill/Agent-Balance und Anti-Patterns prüfen. Read-only -- ändert nichts ohne OK.
 
 **Teams verbessern:** Audit-Ergebnisse anwenden: Backups, Safe Fixes, Agent-zu-Skill-Konvertierungen, CLAUDE.md-Update.
+
+**Teams rebuilden:** Operatives Wissen aus einem bestehenden Team extrahieren und als Grundlage für einen Neubau verwenden. Die Extraktion fließt in den 4-Phasen-Flow ein -- nichts geht verloren.
 
 **Wissen aufbauen:** Integriert Wissensquellen (YouTube-Transcripts, Artikel, Notion-Inbox) in eine kuratierte Knowledge-Base. Verdichtet statt sammelt -- neues Wissen wird gegen den bestehenden Stand geprüft.
 
@@ -38,6 +40,23 @@ Sechs Säulen, die jedes Team durchziehen:
 
 6. **Skill-First.** Jede Aufgabe startet als Skill-Kandidat. Agent nur bei eigenem Urteilsvermögen. "Braucht das wirklich einen Agent?" ist die erste Frage.
 
+### 4-Phasen-Flow für Team-Building
+
+Neue Teams entstehen in vier Phasen:
+
+```
+Interview → Research → Synthese → Build
+    |                     |
+  Gate 1                Gate 2
+```
+
+1. **Interview:** Der Agent klärt alle Anforderungen mit dir (Domäne, Zielgruppe, Workflows, Constraints). Gate 1: Du bestätigst die Zusammenfassung.
+2. **Research:** Bei unbekannten Domänen recherchiert `/research-domain` das Fachgebiet. Ergebnis: Briefing-Datei + Domain-Knowledge.
+3. **Synthese:** Domänenwissen + Architektur-Prinzipien + User-Anforderungen werden verschmolzen. Konflikte werden identifiziert und gelöst. Gate 2: Du bestätigst den Architektur-Entwurf.
+4. **Build:** `/build-team` erstellt alle Dateien.
+
+Vorher baute der Agent Teams direkt aus dem Interview -- ohne Domänenwissen, ohne Synthese-Schritt. Die Research-Phase schließt diese Lücke.
+
 ### Rückwärts-Suche bei Umbau
 
 Hinzufügen und Umbauen sind fundamental verschiedene Operationen. Beim Hinzufügen (neuer Skill, neue Datei) reicht vorwärts denken: "Was muss ich erstellen?" Beim Umbau (Entfernen, Umbenennen, Verantwortlichkeit verschieben) ist Rückwärts-Suche Pflicht: "Was konsumiert das, was ich gerade ändere?"
@@ -48,7 +67,7 @@ Jedes Team bekommt diese Regel in seiner CLAUDE.md:
 
 Nicht jedes Problem braucht einen neuen Skill. Manchmal fehlt dem Agent nur der Auslöser im richtigen Moment -- dann reicht ein Bedingungssatz in CLAUDE.md statt eines neuen Workflows.
 
-## Drei Schutzschichten
+### Drei Schutzschichten
 
 Agent-Teams vergessen ihre Regeln. Je länger eine Session, desto stärker verdünnt sich der System Prompt. Dagegen gibt es drei Schichten:
 
@@ -58,9 +77,7 @@ Agent-Teams vergessen ihre Regeln. Je länger eine Session, desto stärker verd�
 | **Skills** | Workflows ausführen | Nein (frisch geladen bei Aufruf) |
 | **Hooks** | Harte Schranken + Erinnerungen | Nein (extern, kein LLM) |
 
-### Globaler Safety-Hook
-
-Ein Shell-Script das deterministisch prüft und blockt. Drei Stufen:
+**Globaler Safety-Hook.** Ein Shell-Script das deterministisch prüft und blockt. Drei Stufen:
 
 - **deny:** `git push --force`, `rm -rf`, `git reset --hard`, `git clean -f` -- sofort blockiert, keine Rückfrage
 - **ask:** `.env`-Zugriff, Commits in fremden Repos -- Bestätigung erforderlich
@@ -68,9 +85,7 @@ Ein Shell-Script das deterministisch prüft und blockt. Drei Stufen:
 
 Registriert in `~/.claude/settings.json`, gilt für alle Projekte auf allen Maschinen. Kein LLM-Call, kein Vergessen, kein Interpretieren.
 
-### Post-Compaction-Reminder
-
-Wenn das Kontextfenster voll wird, komprimiert Claude automatisch den älteren Kontext. Ein Hook injiziert danach die kritischsten Prinzipien zurück -- die, die am stärksten driften.
+**Post-Compaction-Reminder.** Wenn das Kontextfenster voll wird, komprimiert Claude automatisch den älteren Kontext. Ein Hook injiziert danach die kritischsten Prinzipien zurück -- die, die am stärksten driften.
 
 ## Das Selbstentwicklungs-Paradox
 
@@ -86,6 +101,18 @@ Mehr dazu: [`knowledge/self-evolution-paradox.md`](knowledge/self-evolution-para
 
 ## Benutzung
 
+### Starten
+
+```bash
+project-builder main     # Architektur-Orchestrator (Status, Dispatches, Infrastruktur)
+project-builder team     # Neues Team bauen (direkt in 4-Phasen-Flow)
+project-builder rebuild  # Bestehendes Team neu bauen (Extraktion + 4-Phasen-Flow)
+```
+
+Drei Rollen, ein Agent. `main` ist der Standardmodus. `team` und `rebuild` überspringen die Begrüßung und starten direkt im passenden Workflow.
+
+### Natürliche Sprache
+
 Sag dem Agent was du willst -- er wählt den richtigen Skill:
 
 - *"Bau mir ein Team für mein Coaching-Business"*
@@ -93,13 +120,16 @@ Sag dem Agent was du willst -- er wählt den richtigen Skill:
 - *"Setz die Empfehlungen um"*
 - *"Dieser Text klingt zu sehr nach KI"*
 
-Befehle die du selbst aufrufst:
+### Befehle
 
 | Befehl | Wann |
 |--------|------|
-| `/track` | Sessionende: Projektstatus sichern |
+| `/track` | Projektstatus aktualisieren |
+| `/commit` | Sessionende: /track + commit + push in einem Schritt |
 | `/learn` | Neue Wissensquellen integrieren |
 | `/cross-commit` | Änderungen in verwalteten Repos committen + pushen |
+
+`/commit` ist der Standard für Sessionende. Pusht nur wenn ein Remote existiert -- ohne Remote wird nur lokal committed.
 
 ## Setup
 
@@ -115,7 +145,7 @@ Das Setup-Script:
 3. Richtet den globalen `project-builder`-Shortcut ein (optional)
 4. Installiert Python-Abhängigkeiten für YouTube-Transcripts (optional)
 
-Danach: `project-builder` (oder `./scripts/project-builder`) starten.
+Danach: `project-builder main` starten.
 
 ### Eigene Instanz konfigurieren
 
@@ -136,11 +166,17 @@ project-builder/
   CLAUDE.md                    # Projektkontext (für alle Agents gleich)
   main-agent.md                # System Prompt (Identität + Prinzipien)
   project-status.md            # Aktueller Stand (<50 Zeilen)
+  teams.md                     # Registry aller Agent-Teams (Routing-Tabelle)
+  dispatches.md                # Write-Only-Log: was wurde wann wohin gesendet
   knowledge/                   # Kuratierte Knowledge-Base
   reference/                   # On-Demand-Referenzmaterial
   sources/inbox/               # Neue Wissensquellen hier ablegen
-  scripts/                     # Starter-Script, Tests, Hilfsskripte
-  .claude/skills/              # 11 Skills
+  scripts/
+    project-builder            # Starter-Script (main|team|rebuild)
+    starter-main.md            # Sessionstart-Routine: Orchestrator
+    starter-team.md            # Sessionstart-Routine: Team-Building
+    starter-rebuild.md         # Sessionstart-Routine: Team-Rebuild
+  .claude/skills/              # 13 Skills
   .claude/hooks/               # Deterministische Sicherheits-Hooks
 ```
 
@@ -152,7 +188,7 @@ Verdichtetes Wissen zu KI-Agent-Architektur. Wird über `/learn` aktualisiert, n
 |-------|-------|
 | `skill-best-practices.md` | Wann und wie Skills einsetzen |
 | `token-optimization.md` | Token-Sparstrategien für Agent-Teams |
-| `entscheidungshierarchie.md` | Skill vs. Agent: Entscheidungsbaum + Verhaltensänderung vs. Systemerweiterung |
+| `entscheidungshierarchie.md` | Skill vs. Agent: Entscheidungsbaum |
 | `session-state.md` | Statusdateien, Hooks, Context Loading |
 | `content-humanization.md` | Anti-GPTism-Regeln, Wort-Blacklists |
 | `self-evolution-paradox.md` | Selbstentwicklung vs. Selbstkonsistenz |
@@ -169,24 +205,22 @@ Lokal:   Sessionstart → git pull → arbeiten → commit → push
 Server:  Sessionstart → git pull → arbeiten → commit → push
 ```
 
-Jeder Agent ist selbst dafür verantwortlich, bei Sessionstart den neuesten Stand zu holen. Das Script im Starter fragt automatisch, ob gepullt werden soll, wenn der Remote neuere Commits hat.
+Jeder Agent ist selbst dafür verantwortlich, bei Sessionstart den neuesten Stand zu holen. Das Starter-Script fragt automatisch, ob gepullt werden soll, wenn der Remote neuere Commits hat.
 
 **Umgebungserkennung:** Eine Datei `~/.environment` (Inhalt: `local` oder `server`) sagt dem Agent, wo er läuft. Einmal pro Maschine gesetzt, außerhalb aller Repos.
 
-**Unified Starter Scripts:** Ein Script pro Team, das als Argument die Rolle annimmt (`./scripts/mein-team reviewer`). Ohne Argument zeigt es die verfügbaren Rollen. So startet man auf jeder Maschine gleich.
-
-### Dispatch-System: Wissen zwischen Teams routen
+### Dezentrale Dispatches: Wissen zwischen Teams routen
 
 Wenn `/learn` eine Quelle verarbeitet, kann das Wissen für mehrere Teams relevant sein. Das Dispatch-System routet Erkenntnisse an die richtigen Empfänger:
 
 ```
 Quelle → /learn → Routing:
   KI-Architektur    → eigene knowledge/
-  Für anderes Team  → dispatches/[team-name]/
+  Für anderes Team  → [team-repo]/dispatches/inbox/
   Beides            → knowledge/ + Dispatch
 ```
 
-Jedes Team hat ein Verzeichnis unter `dispatches/`. Bei Sessionstart prüft der Ziel-Agent, ob neue Dispatches vorliegen. Eine zentrale `dispatches.md` trackt, welche gelesen und welche offen sind.
+Dispatch-Dateien leben in den Team-Repos, nicht zentral im Project Builder. Bei Sessionstart prüft der Ziel-Agent, ob neue Dispatches in seinem `dispatches/inbox/` vorliegen, und verarbeitet sie automatisch. `dispatches.md` im PB-Repo ist ein Write-Only-Log (was wurde wann wohin gesendet).
 
 **Routing-Tabelle:** `teams.md` definiert pro Team die Wissensgebiete. `/learn` matcht Erkenntnisse gegen diese Gebiete und routet automatisch.
 

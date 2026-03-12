@@ -94,9 +94,8 @@ Wenn ja: Rufe /draft-extension auf. Pruefe den Entwurf, dann setze ihn selbst um
 3. Brief den User
 
 ## Sessionende
-1. Rufe `/track` auf
-2. Zwischenergebnisse in Dateien
-3. Frage: "Soll ich committen und pushen?"
+1. Zwischenergebnisse in Dateien
+2. Rufe `/commit` auf
 
 ## Was du NICHT bist
 [Explizite Abgrenzung]
@@ -227,7 +226,7 @@ cd "$PROJECT_ROOT"
 # [Git-Sync-Check hier einfuegen]
 
 PROMPT_FILE="$PROJECT_ROOT/[main-agent].md"
-STARTER_PROMPT="Sessionstart: Lies project-status.md, [weitere Dateien], dann brief mich wo wir stehen. Reminder: Wenn ich die Session beende, frage mich ob du committen und pushen sollst."
+STARTER_PROMPT="Sessionstart: Lies project-status.md, [weitere Dateien], dann brief mich wo wir stehen. Reminder: Sessionende → Rufe /commit auf."
 
 # --get-prompt: Nur den Starter-Prompt ausgeben (fuer externe Apps)
 # --remote: Claude ohne Starter-Prompt starten (fuer Remote Control Flow)
@@ -264,9 +263,9 @@ fi
 
 BRIEFING_DIR="$PROJECT_ROOT/briefings"
 if [[ -f "$BRIEFING_DIR/[agent-name]-"*.md ]]; then
-    DYNAMIC_PROMPT="Lies Briefing: briefings/[agent-name]-*.md. Arbeite mit dem User. Reminder: Sessionende → committen/pushen?"
+    DYNAMIC_PROMPT="Lies Briefing: briefings/[agent-name]-*.md. Arbeite mit dem User. Reminder: Sessionende → /commit aufrufen."
 else
-    DYNAMIC_PROMPT="Kein Briefing. Frage den User. Lies CLAUDE.md. Reminder: Sessionende → committen/pushen?"
+    DYNAMIC_PROMPT="Kein Briefing. Frage den User. Lies CLAUDE.md. Reminder: Sessionende → /commit aufrufen."
 fi
 
 exec claude --append-system-prompt "$(cat "$AGENT_FILE")" "$DYNAMIC_PROMPT"
@@ -314,6 +313,27 @@ description: [Wann getriggert]
 ---
 
 [Strukturierter Dialog mit 3-5 Fragen und definiertem Output-Format.]
+```
+
+#### Pflicht-Skill: `/commit`
+
+Jedes Team bekommt `/commit` (Inline). Atomisches Sessionende: /track + commit + push.
+```markdown
+---
+name: commit
+description: "Session-Commit: /track ausfuehren, dann committen und pushen. Standard fuer Sessionende."
+---
+
+Fuehre einen Session-Commit durch:
+
+1. Rufe `/track` auf -- aktualisiert project-status.md mit dem Session-Fortschritt.
+2. `git add -u` -- alle getrackten Aenderungen stagen.
+3. `git diff --cached --stat` -- Ueberblick zeigen.
+4. Commit-Message aus den Aenderungen ableiten (kurz, deutsch, beschreibend).
+5. `git commit` mit der Message.
+6. Pruefe ob ein Remote existiert (`git remote`). Wenn ja: `git push`. Wenn nein: "Kein Remote konfiguriert, nur lokal committed." melden.
+
+Wenn nichts zu committen ist (keine staged changes nach Schritt 2), melde das und ueberspringe Schritt 3-6.
 ```
 
 #### Pflicht-Skill: `/reflect`
@@ -398,8 +418,15 @@ Main-Agent, [Datum]
 
 ## Vorgehen beim Team-Entwurf
 
-### Schritt 1: Anforderungen klaeren
+### Phasen-Uebersicht
+
+**Phase 1 Interview → Phase 2 Research → Phase 3 Synthese → Phase 4 Build**
+
+### Phase 1: Interview (Main-Agent)
+
+Alle Punkte durchgehen, nichts ueberspringen:
 - Was ist das konkrete Ziel?
+- **Greenfield oder Maintenance?** (Bestandscode, Wartungsvertrag, fremde Codebase → Maintenance. Beeinflusst Research-Trigger in Phase 2.)
 - Welche Aufgabentypen: wiederholbare Workflows (Skill) vs. eigenstaendige Denkarbeit (Agent)?
 - Welche Experten braucht man? Welche sind "Denker" vs. "Ausfuehrer"?
 - Wie soll der Main-Agent sich verhalten?
@@ -407,8 +434,32 @@ Main-Agent, [Datum]
 - Welches Fachwissen brauchen die Agents?
 - Welche Aufgaben erfordern laengeren Dialog?
 - Wird das Produkt vermarktet? → Strategy-Check
+- **Ist die Domaene bekannt oder unbekannt?** → Research-Trigger (Phase 2)
+- **User-Kontext fuer das neue Team:** Wer arbeitet mit dem Team? Welcher technische Hintergrund? Welche Vorlieben bei Ton/Stil/Sprache? Was sollte das Team ueber den User wissen? (Fuettert `CLAUDE.md ## Ich` des neuen Teams.)
 
-### Schritt 2: Architektur vorschlagen
+**Gate 1:** Strukturierte Zusammenfassung aller geklaerten Punkte zeigen. User bestaetigt oder korrigiert. Erst dann weiter.
+
+### Phase 2: Research (optional, /research-domain)
+
+**Trigger:** Unbekannte Domaene, fremde Codebase, neues Fachgebiet.
+
+Der Main-Agent delegiert an `/research-domain` mit:
+- Domaene und Ziel
+- Konkrete Fragen aus Phase 1
+- Was bereits bekannt ist (vermeidet Doppelarbeit)
+
+Ergebnis: Zwei Dateien unter `briefings/`:
+- `research-[domaene].md` -- Briefing fuer die Synthese
+- `domain-knowledge-[domaene].md` -- Geht spaeter ins neue Team
+
+### Phase 3: Synthese (Main-Agent)
+
+Der Main-Agent verschmilzt drei Wissensquellen:
+1. **Domaenenwissen** aus dem Research-Briefing (Phase 2)
+2. **Architektur-Wissen** aus eigener `knowledge/` (Skill-First, Token-Optimierung, etc.)
+3. **User-Anforderungen** aus dem Interview (Phase 1)
+
+Dabei:
 
 **Zuerst Skills identifizieren:**
 - Jede Aufgabe durchgehen: Kann das ein Skill sein?
@@ -434,7 +485,15 @@ Main-Agent, [Datum]
 - Immer-geladene Dateien (CLAUDE.md + System Prompt + project-status.md) <400 Zeilen
 - Keine Templates/Prozeduren in immer-geladenen Dateien
 
-### Schritt 3: Alle Dateien erstellen
+**Gate 2:** Architektur-Entwurf zeigen (Agents, Skills, Knowledge-Stufe, Begruendungen). User bestaetigt oder korrigiert. Erst dann weiter.
+
+### Phase 4: Build (/build-team)
+
+Der Main-Agent delegiert an `/build-team` mit strukturiertem Brief:
+- Alle Ergebnisse aus Interview + Synthese
+- Falls Research: Domain-Knowledge-Dateien angeben
+
+/build-team erstellt:
 - `CLAUDE.md` (mit Agent-Tabelle, Skill-Tabelle, Umlaut-Regel)
 - `[main-agent].md` (System Prompt, <120 Zeilen)
 - `.claude/agents/[name].md` (mit model, maxTurns)
@@ -448,20 +507,16 @@ Main-Agent, [Datum]
 - `.gitignore`
 - `.claude/settings.json` nur wenn projektspezifische Hooks noetig (keine Permissions -- globaler Hook deckt das ab)
 
-### Schritt 3b: Git-Repository einrichten
+**Git-Repository:**
 1. `git init`
 2. `.gitignore` pruefen (keine Secrets)
 3. Initial Commit
 4. `gh repo create --private --source . --remote origin --push`
 
-### Schritt 3c: Remote-Server-Deployment (optional)
-Falls ein Remote-Server konfiguriert ist, Repo dort klonen und Shortcut einrichten:
-1. Repo klonen in das Projektverzeichnis auf dem Server
-2. Starter-Script als Symlink in den PATH des Servers legen
+**Remote-Server-Deployment** (optional):
+Falls ein Remote-Server konfiguriert ist, Repo dort klonen und Shortcut einrichten. Falls kein SSH-Zugang: Dem User die Befehle ausgeben.
 
-Falls kein SSH-Zugang vom Build-Rechner besteht, dem User die Befehle ausgeben.
-
-### Schritt 4: Startanleitung geben
+**Startanleitung:**
 - Main-Agent starten: `scripts/[name]`
 - Skills: `/skill-name`
 - Session beenden: Agent aktualisiert Status, fragt nach Commit+Push
@@ -483,6 +538,7 @@ Falls kein SSH-Zugang vom Build-Rechner besteht, dem User die Befehle ausgeben.
 - Content-Agents brauchen Anti-GPTism-Regeln aus `knowledge/content-humanization.md`
 - Git ist Infrastruktur: Private Repo, .gitignore, Starter-Scripts mit Git-Sync-Check
 - Umlaut-Regel ist Pflicht in CLAUDE.md
+- `/commit` ist Pflicht in jedem Team (atomisches Sessionende, graceful ohne Remote)
 - `/reflect` ist Pflicht in jedem Team
 - **Rueckwaerts-Suche bei Umbau ist Pflicht in jeder CLAUDE.md:** Standard-Regel fuer alle Teams (siehe CLAUDE.md-Template)
 - **Immer-geladene Dateien schlank halten:** CLAUDE.md <100 Zeilen, System Prompt <200 Zeilen, project-status.md <50 Zeilen. Referenzmaterial in On-Demand-Dateien.

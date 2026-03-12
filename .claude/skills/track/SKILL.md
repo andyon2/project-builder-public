@@ -16,6 +16,8 @@ Project-builder ist ein Meta-Projekt. Es gibt keinen klassischen Task-Backlog. S
 
 ## Vorgehen
 
+### Teil 1: project-status.md (Arbeitsgedaechtnis)
+
 1. Lies `project-status.md`
 2. Fasse zusammen, was in dieser Session erarbeitet wurde
 3. Aktualisiere die drei Sektionen:
@@ -26,8 +28,20 @@ Project-builder ist ein Meta-Projekt. Es gibt keinen klassischen Task-Backlog. S
 5. **Karteileichen-Pruefung (PFLICHT):** Offene Punkte gegen den aktuellen Stand abgleichen. Erledigte entfernen.
 6. Schreibe die aktualisierte Datei zurueck (Edit, nie Write)
 
+### Teil 2: changelog.md (Langzeitgedaechtnis)
+
+7. Pruefe: Gab es in dieser Session Architektur-Aenderungen? (Neue Skills, neue Workflows, strukturelle Aenderungen an Dateien/Conventions, Aenderungen die alle Teams betreffen)
+8. Wenn ja: Lies `changelog.md` und ergaenze einen neuen Eintrag oben (nach der Ueberschrift, vor dem letzten Eintrag). Format:
+   ```
+   ### [Kurztitel] (YYYY-MM-DD)
+   - **[Feature/Aenderung]:** Beschreibung. Was, warum, was betroffen.
+   - Aktualisiert: [betroffene Dateien]
+   ```
+9. Wenn nein (nur Bugfixes, Recherche, Beratung): changelog.md nicht anfassen.
+
 ## Regeln
-- Halte die Datei unter 50 Zeilen
+- project-status.md unter 50 Zeilen halten
 - Keine Meinung, keine Bewertung -- nur Fakten
-- Keine Duplikation: Was in knowledge/ oder changelog.md steht, wird hier nicht wiederholt
+- Keine Duplikation: Was in knowledge/ oder changelog.md steht, wird in project-status.md nicht wiederholt
 - Architektur-Entscheidungen brauchen immer [YYYY-MM-DD] + Ausloeser
+- changelog.md ist append-only (bestehende Eintraege nie aendern)

@@ -7,7 +7,7 @@ context: fork
 model: sonnet
 ---
 
-Du erstellst ein vollstaendiges Agent-Team basierend auf einem strukturierten Brief. Der Main-Agent hat bereits die Anforderungen mit dem User geklaert (Schritt 1) -- du fuehrst Schritte 2-5 aus.
+Du erstellst ein vollstaendiges Agent-Team basierend auf einem strukturierten Brief. Der Main-Agent hat bereits Interview, Research und Synthese durchgefuehrt (Phasen 1-3) -- du fuehrst Phase 4 (Build) aus.
 
 **Wichtig:** Du erstellst Dateien. Du triffst keine strategischen Entscheidungen -- die stehen im Brief. Wenn der Brief unklar oder unvollstaendig ist, schreibe was du hast und notiere offene Punkte im Output.
 
@@ -22,12 +22,13 @@ Lies den Brief ($ARGUMENTS) und extrahiere:
 - Geplante Agents (mit Denkweise, Modell, Modus)
 - Geplante Skills (mit Typ, Kontext, Modell)
 - Knowledge-Stufe (0/1/2)
+- Domain-Knowledge-Dateien (falls Research stattfand, Pfade zu den Dateien)
 - Content-Check: Endnutzer-Texte? → Anti-GPTism-Regeln noetig
 - Strategy-Check: Wird vermarktet? → Strategie-Rolle geklaert?
 - Umlaut-Regel (ae/oe/ue oder ae/oe/ue)
 - Sonstige Konventionen
 
-### 1. Architektur pruefen (Schritt 2 der Prozedur)
+### 1. Architektur pruefen
 
 Bevor du Dateien erstellst, pruefe den Brief gegen die Qualitaets-Checkliste:
 - Skill-zu-Agent-Verhaeltnis: mindestens 1:1?
@@ -38,7 +39,7 @@ Bevor du Dateien erstellst, pruefe den Brief gegen die Qualitaets-Checkliste:
 
 Wenn etwas fehlt: Ergaenze es selbst nach Best Practice und notiere es im Output.
 
-### 2. Dateien erstellen (Schritt 3 der Prozedur)
+### 2. Dateien erstellen
 
 Erstelle im Projektverzeichnis (falls nicht angegeben: aktuelles Verzeichnis):
 
@@ -54,6 +55,11 @@ Erstelle im Projektverzeichnis (falls nicht angegeben: aktuelles Verzeichnis):
 9. `project-status.md` -- Initial: Ziel + erste offene Aufgaben.
 10. `briefings/.gitkeep`
 
+**Domain-Knowledge:** Wenn der Brief Domain-Knowledge-Dateien referenziert (aus Phase 2 Research):
+- Kopiere die Dateien ins neue Team unter `knowledge/`
+- Knowledge-Stufe wird automatisch mindestens Stufe 1 (falls im Brief niedriger angegeben)
+- Erstelle `knowledge/index.md` mit Verweis auf die Domain-Knowledge-Datei(en)
+
 **Content-Agents:** Wenn der Brief Content-Generierung erwaehnt, lies `knowledge/content-humanization.md` und integriere Anti-GPTism-Regeln in die relevanten Agent-Prompts.
 
 **Knowledge-System:** Je nach Stufe:
@@ -61,7 +67,7 @@ Erstelle im Projektverzeichnis (falls nicht angegeben: aktuelles Verzeichnis):
 - Stufe 1: `knowledge/` + `knowledge/index.md` + `/learn`-Skill (Fork, Sonnet)
 - Stufe 2: Wie Stufe 1 + `sources/inbox/` + `sources/archive/` + `sources/log.md` + Notion-Integration in /learn
 
-### 3. Git-Repository (Schritt 3b)
+### 3. Git-Repository
 
 ```bash
 git init

@@ -80,7 +80,7 @@ Bei "Nicht konvertierbar": Sage dem User ehrlich, dass dieser Agent ein Agent bl
 ## Konvertierungsanalyse: Agent "[name]"
 
 ### Denkweise-Test
-[Tabelle aus Schritt 2]
+[Tabelle aus Konvertierbarkeits-Bewertung oben]
 
 ### Bewertung: [Gut konvertierbar / Teilweise / Nicht konvertierbar]
 [Begruendung]
