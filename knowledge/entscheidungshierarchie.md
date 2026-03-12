@@ -172,9 +172,33 @@ Nicht jedes Problem braucht einen neuen Skill oder Agent. Manche Probleme sind *
 
 [Quelle: Architektur-Dialog mit bestehendem Review-Team, 2026-03-11 -- aus konkretem Fall: Verantwortlichkeit zwischen Agents verschoben, abhängiger Skill nicht angepasst]
 
+## Agent Teams: Anthropics offizielles Pattern (Bestaetigung)
+
+[Neu: 2026-03-12 -- Bestaetigung + Praezisierung]
+
+Anthropic hat "Agent Teams" als Feature in Claude Code veroeffendlicht. Das entspricht dem bereits bekannten Sub-Agent-Parallel-Pattern -- aber mit einem spezifischen Ziel: **Diverse Perspektiven auf dasselbe Problem**, nicht Arbeitsteilung.
+
+**Unterschied zu parallelen Sub-Agents:**
+- Parallele Sub-Agents: Verschiedene Agenten bearbeiten **verschiedene Teilaufgaben**
+- Agent Teams: Verschiedene Agenten nehmen **verschiedene Perspektiven** auf **dasselbe Problem** ein
+
+**Typisches Anwendungsbeispiel (Code-Review):**
+- Agent 1: Developer-Perspektive (Lesbarkeit, Architektur)
+- Agent 2: Security-Perspektive (Vulnerabilities, Angriffsvektoren)
+- Agent 3: Architektur-Perspektive (Skalierbarkeit, Abhaengigkeiten)
+
+Die drei Agents koordinieren sich, abstimmen sich -- und widersprechen sich teils bewusst. Ziel: Blinde Flecken aufdecken.
+
+**Abgrenzung zu bestehendem Wissen (Sub-Agent Verification Loops):** Verification Loops prufen einen Output auf Korrektheit. Agent Teams generieren gemeinsam einen Output aus mehreren Winkeln. Komplementaer, nicht redundant.
+
+Bestaetigt: Stochastic Multi-Agent Consensus Pattern (skill-best-practices.md) ist die allgemeinere Form; Agent Teams sind eine konkrete Implementierung mit Koordination statt nur Parallelarbeit.
+
+Quelle: warum-dein-claude-code-agent-wichtigen-kontext-vergisst (2026-03-12), anthropic-multi-agent-code-review (2026-03-12)
+
 ## Quellen
 - Rendle-Architektur (v3-v5) -- Grundlegende Hierarchie, Denkweise-Test
 - improved-skill.md (2026-03-06) -- Grenzfaelle Agent-zu-Skill, Team-Kompositionsregeln
 - AI_DESIGN_PATTERNS_REPORT.md (2026-03-06) -- Muster bei uebergrossen Agent-Teams
 - stop-building-ai-agents-do-this-instead.md (2026-03-07) -- Genius-vs-Tax-Professional-Metapher als Intuition fuer den Wert von Spezialisierung
 - 2026-03-08_how-to-build-10000-agentic-workflows-claude-code-tutorial.md (2026-03-08) -- Deployment-Determinismus, WAT-Framework Deployment-Einschraenkung, Self-Healing nur bei aktivem Agent.
+- 2026-03-12_warum-dein-claude-code-agent-wichtigen-kontext-vergisst.md / anthropic-multi-agent-code-review (2026-03-12) -- Agent Teams als Anthropic-Feature: diverse Perspektiven auf dasselbe Problem, Koordination zwischen Agents, Abgrenzung zu Arbeitsteilung

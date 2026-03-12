@@ -49,11 +49,12 @@ Erstelle im Projektverzeichnis (falls nicht angegeben: aktuelles Verzeichnis):
 3. `[main-agent].md` -- System Prompt nach Template, <120 Zeilen. Nur Identitaet + Prinzipien + Verhalten + Skill-Tabelle + Sessionstart/ende.
 4. `.claude/agents/[name].md` -- Pro Agent, nach Template. Pflichtfelder: model, maxTurns, Denkweise, Eskalation, Selbstcheck.
 5. `.claude/skills/[name]/SKILL.md` -- Pro Skill, nach Template. Fork-Skills: Pflichtfeld model.
-6. `.claude/skills/reflect/SKILL.md` -- Pflicht. Fork, Sonnet. Inkl. Prinzip-Konsistenz-Sektion.
-7. `scripts/[main-agent]` -- Starter-Script mit Git-Sync-Check und Sessionstart-Prompt. `chmod +x`.
-8. `scripts/[agent-name]` -- Fuer jeden dialogischen Agent. `chmod +x`.
-9. `project-status.md` -- Initial: Ziel + erste offene Aufgaben.
-10. `briefings/.gitkeep`
+6. `.claude/skills/commit/SKILL.md` -- Pflicht. Inline. Atomisches Sessionende: /track + commit + push. Push nur wenn Remote existiert. Siehe Template in `reference/team-building-templates.md`.
+7. `.claude/skills/reflect/SKILL.md` -- Pflicht. Fork, Sonnet. Inkl. Prinzip-Konsistenz-Sektion.
+8. `scripts/[main-agent]` -- Starter-Script mit Git-Sync-Check und Sessionstart-Prompt. `chmod +x`.
+9. `scripts/[agent-name]` -- Fuer jeden dialogischen Agent. `chmod +x`.
+10. `project-status.md` -- Initial: Ziel + erste offene Aufgaben.
+11. `briefings/.gitkeep`
 
 **Domain-Knowledge:** Wenn der Brief Domain-Knowledge-Dateien referenziert (aus Phase 2 Research):
 - Kopiere die Dateien ins neue Team unter `knowledge/`
@@ -93,6 +94,7 @@ Bevor du das Ergebnis zurueckgibst:
 - [ ] Jeder Fork-Skill hat model?
 - [ ] CLAUDE.md <100 Zeilen?
 - [ ] System Prompt <120 Zeilen?
+- [ ] /commit existiert (Inline, Pflicht-Skill)?
 - [ ] /reflect existiert mit Prinzip-Konsistenz-Sektion?
 - [ ] Starter-Scripts sind executable?
 - [ ] Umlaut-Regel in CLAUDE.md?

@@ -39,6 +39,7 @@ Wichtig fuer Token-Budget: Das CLAUDE.md muss kompakt bleiben. Mit wachsenden ge
 - 2026-03-08_how-to-build-10000-agentic-workflows-claude-code-tutorial.md (2026-03-08) -- WAT-Framework als Build-Pattern, CLAUDE.md als Projekt-System-Prompt, Deployment-Determinismus als Designprinzip.
 - 2026-03-08_agi-ist-da-warum-spricht-niemand-drber.md (2026-03-08) -- METR-Benchmark (Aufgabenhorizont 14,5h fuer Claude Opus 4.6), Multi-Agent-Parallelisierung, In-Context-Learning als AGI-Kriterium.
 - Knowledge-Architektur-Analyse eines Content-Teams (2026-03-08) -- /learn als Standard-Skill, Infrastruktur-Skills als Architektur-Baustein, /track als Statusverwaltungs-Skill, Stufen-Modell fuer Knowledge-Ingestion, Naming-Konsistenz /integrate-source → /learn.
+- 2026-03-12_claude-code-20-has-arrived-its-insane.md (2026-03-12) -- Skills 2.0 Eval-Workflow (kriterienbasiertes Scoring, HTML-Report, AB-Testing, Sub-Agent Parallelisierung), Leaner-Skills durch Eval-basiertes Reference-File-Pruning, Google Workspace CLI als Bestaetigung CLI>MCP.
 
 ## Wann ist etwas ein Skill (nicht ein Agent)?
 
@@ -87,6 +88,67 @@ Ein Agent ist noetig, wenn:
 - Liegen unter `scripts/[skill-name]/`
 - Beispiele: Daten-Fetching, PDF-Rendering, API-Calls
 - Der Skill orchestriert die Skripte, nicht umgekehrt
+
+## CLI vs. MCP: Klare Faustregel
+
+[Neu: 2026-03-12]
+
+Wenn fuer ein Tool sowohl eine CLI als auch ein MCP existiert: **immer CLI bevorzugen.**
+
+**Begruendung:** Claude Code lebt im Terminal. Ein CLI-Tool ist direkt ansprechbar via Bash -- kein Middleman, kein Config-Overhead, kein zusaetzlicher Prozess. MCPs versuchen dasselbe zu erreichen, haben aber inhaerent mehr Overhead, weil sie ausserhalb des Terminals liegen.
+
+**Beispiele:**
+- Supabase: Supabase CLI > Supabase MCP
+- NotebookLM: NotebookLM-PI CLI > Kein offizielles MCP
+- Firecrawl: Firecrawl CLI > Firecrawl MCP
+- Google Workspace: GWS CLI > Google Workspace MCP
+
+**Wenn nur MCP verfuegbar ist:** MCP bleibt sinnvoll als Fallback, besonders fuer Tools ohne CLI-Alternative.
+
+**Caveat:** Jeder neue CLI braucht in der Regel eine begleitende **Skill-Datei**, die Claude Code beibringt wie der CLI zu nutzen ist. Pruefen ob der CLI-Anbieter bereits einen offiziellen Skill mitliefert (Supabase, Vercel, Playwright tun das).
+
+Quellen: cli-anything-just-brought-claude-code (2026-03-12), 10-claude-code-plugins (2026-03-12), googles-new-tool-gws (2026-03-12)
+
+## Tool-Registry: Dreischichtige Tool-Entkopplung
+
+[Neu: 2026-03-12]
+
+Wenn mehrere Teams dasselbe externe Tool nutzen (z.B. Notion), entsteht ein Wartungsproblem: API-Details in jedem Skill hardcoded, bei Tool-Wechsel N×M Migration.
+
+**Loesung: Drei Schichten trennen**
+
+| Schicht | Verantwortung | Wo |
+|---------|--------------|-----|
+| **Skill** | Workflow-Logik (WAS) | `.claude/skills/[name]/` |
+| **Tool-Registry** | Faehigkeit → Werkzeug (WOMIT) | `~/.config/claude-tools/registry.md` |
+| **Config** | IDs, Credentials, DB-Namen (WIE) | `~/.config/[tool]/` oder `config/` |
+
+**Durchsetzung via Wissens-Entzug:** Skills enthalten keine API-Details (Endpoints, Property-IDs, Filter-Syntax). Der Agent KANN nicht direkt API-Calls machen, weil er die Details nicht hat. Staerker als Verhaltensregeln ("bitte schau erst in die Registry"), die ignoriert werden.
+
+**Beispiel vorher:**
+```
+# Im Skill (hardcoded):
+"PATCH page_id → properties: { 'oYqt': {'select': {'name': 'video'}} }"
+```
+
+**Beispiel nachher:**
+```
+# Im Skill (abstrakt):
+"Setze Type und Project auf dem Eintrag"
+```
+
+Der Agent liest CLAUDE.md → findet "Custom Tools → Registry" → liest Registry → findet das CLI-Tool → liest Config fuer Details.
+
+**CLAUDE.md-Konvention fuer alle Teams:**
+```
+## Custom Tools
+Eigene CLI-Tools: siehe `~/.config/claude-tools/registry.md`.
+CLI-Tools immer bevorzugen vor MCP-Servern oder direkten API-Aufrufen.
+```
+
+**Registry-Format:** Pro Tool: Name, Pfad, Befehle, Config-Verweis. Keine API-Details, nur CLI-Interface.
+
+Quellen: Eigenentwicklung, validiert durch /learn-Migration (2026-03-12)
 
 ## MCP und Skills: Abgrenzung
 
@@ -199,6 +261,44 @@ Seit 2026 verfuegbar. Kann:
 - Trigger Tuning automatisieren
 
 Installation: `/plugins -> Manage Plugins -> skill-creator -> Install`
+
+### Skill Performance Measurement (AB-Testing)
+
+[Neu: 2026-03-12]
+
+Der Skill Creator kann nicht nur Skills erstellen, sondern auch **messen ob ein Skill tatsaechlich besser ist** als der Zustand ohne ihn. Konkret:
+- AB-Test: Aufgabe mit Skill vs. ohne Skill
+- Vergleich: neue Version eines Skills vs. alte Version (vor/nach Aenderungen)
+
+**Warum wichtig:** Ohne Messung ist Skill-Optimierung Bauchgefuehl. Mit AB-Testing gibt es echte Daten. Ein schlechterer Skill kann jetzt erkannt und zurueckgesetzt werden.
+
+**Anwendung:** Vor allem bei Capability-Uplift-Skills sinnvoll (die fragil sind und mit Modell-Updates obsolet werden koennen). Siehe Skill-Typen-Abschnitt.
+
+Quelle: 10-claude-code-plugins (2026-03-12)
+
+### Skills 2.0: Strukturierte Evals mit kriterienbasiertem Scoring
+
+[Neu: 2026-03-12]
+
+Der Skill Creator hat mit Skills 2.0 strukturierte Evaluierungen bekommen. Nicht mehr nur "Passt/Passt nicht" -- sondern kriterienbasiertes Scoring mit HTML-Report.
+
+**Workflow:**
+1. Skill aufbauen (Name, Trigger-Description, Goal, Tools, Reference Files, Step-by-Step-Prozess)
+2. Eval mit **spezifischen Kriterien** starten (nicht "teste alles auf einmal"):
+   - Beispiel: "Pruefe ob der Skill immer die Persuasion-Toolkit-Referenz einsetzt, Curiosity Gaps nutzt und Founder-Stories einbaut"
+   - 1-3 Kriterien pro Eval-Lauf -- mehr machen Auswertung unscharf
+3. Skill Creator spawnt N Sub-Agenten parallel (z.B. 5), jeder fuehrt den Skill aus
+4. HTML-Report mit: Score pro Kriterium, Beispiele fuer Pass/Fail, Token/Zeit-Benchmarks
+5. Feedback geben → Skill Creator editiert `skill.md` → Eval erneut starten
+6. Iteration bis ~90% Pass-Rate (danach ist weiteres Tuning Grenznutzen)
+
+**AB-Test-Varianten:**
+- Mit Skill vs. ohne Skill: Beweist ob der Skill ueberhaupt Mehrwert bringt
+- Mit vs. ohne bestimmte Reference Files: Findet heraus welche Referenzen tatsaechlich wirken
+
+**Leaner Skills durch Eval:** Bestehende Skills koennen verschlankt werden -- wenn sich herausstellt, dass 2 von 3 Reference Files keinen Score-Unterschied machen, koennen sie entfernt werden. Spart Tokens pro Skill-Aufruf.
+
+**Goldene Regel:** Stop guessing, start testing. Evals ersetzen das naive "run und hoffen" durch einen datengetriebenen Lernzyklus.
 
 ## Grounding-Execution-Evaluation-Finalizing Pattern (4-Agenten-Loop)
 

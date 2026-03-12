@@ -45,8 +45,12 @@ Zentrale Dateien:
 | /[name] | [Beschreibung] | fork |
 | /[name] | [Beschreibung] | inline |
 
+## Custom Tools
+
+Eigene CLI-Tools: siehe `~/.config/claude-tools/registry.md`. CLI-Tools immer bevorzugen vor MCP-Servern oder direkten API-Aufrufen. Bei Unklarheit: `<tool> --help`.
+
 ## Regeln
-[Uebergreifende Regeln, die fuer alle Agents gelten. Mindestens diese Standard-Regel:]
+[Uebergreifende Regeln, die fuer alle Agents gelten. Mindestens diese Standard-Regeln:]
 - **Rueckwaerts-Suche bei Umbau:** Vor dem ersten Edit bei strukturellen Aenderungen: `grep -r` nach allen Konsumenten des Geaenderten. Erst dann editieren. Strukturell = Entfernen, Umbenennen, Output-Format aendern, Verantwortlichkeit zwischen Komponenten verschieben. Nicht strukturell = Hinzufuegen, Erweitern, neue Datei anlegen.
 ```
 

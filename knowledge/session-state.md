@@ -203,9 +203,73 @@ Der METR-Benchmark misst den "Task Horizon" von KI-Modellen: Wie lang darf eine 
 
 **Wichtig fuer Kontext-Planung:** Laengere Aufgaben = mehr Tool-Calls = hoeherer Kontext-Verbrauch. Bei langen Agenten-Runs die Auto-Compaction im Blick behalten (siehe Iceberg-Technik).
 
+## /loop und Scheduled Tasks: Zwei Ebenen der Session-Automatisierung
+
+[Neu: 2026-03-12]
+
+Claude Code unterscheidet zwei Mechanismen fuer automatisierte Aufgaben -- sie haben unterschiedliche Lebenszeiten und Einsatzbereiche:
+
+### /loop (Kurzfristig, session-gebunden)
+- Erstellt einen Cron-Job innerhalb der laufenden Session
+- Syntax: `/loop every 10 minutes [prompt]` oder `/loop everyday [prompt]`
+- Laeuft in **derselben Kontext-Instanz** wie die aktuelle Session
+- **Ablauf:** Nach 3 Tagen automatisch. Deterministisch als Safetyguard.
+- **Session-gebunden:** Wenn die Session geschlossen wird, ist der Loop weg. Kein Catch-up.
+- **Anwendungsfaelle:** Inbox-Monitoring, Sprint-Tracking, alles wo Claude fuer die naechsten Stunden/Tage im Blick halten soll
+- Tools: `CronCreate`, `CronList`, `CronDelete`
+
+### Scheduled Tasks (Dauerhaft, fresh context)
+- Konfiguration ueber Desktop App (nicht Terminal/VSCode-Extension)
+- Laeuft in einer **neuen Kontext-Instanz** bei jeder Ausfuehrung -- liest Projektdateien frisch
+- **Persistent:** Laeuft auch wenn die laufende Session beendet wurde. Holt verpasste Runs nach.
+- **Anwendungsfaelle:** Daily Routinen (YouTube-Check + Content repurposing), Weekly Reports, alles was dauerhaft automatisiert laufen soll
+- Computer muss an, App muss offen sein
+
+### Konsequenz fuer Skill-Design
+- Skills die von Scheduled Tasks aufgerufen werden, duerfen keinen Session-Kontext voraussetzen
+- Sie muessen ihren Kontext komplett aus Projektdateien laden (CLAUDE.md, project-status.md)
+- Scheduled-Task-Skills sind faktisch Deploy-Ready: Sie verhalten sich deterministisch wie klassische Automatisierungen
+- Verbuendet sich mit dem **WAT-Framework**: Workflows und Tools muessen vollstaendig selbsterklaerend sein -- der Agent-Kontext ist fresh, nicht die Fortsetzung einer menschlichen Session
+
+## Context Engineering: Fuenf-Ebenen-Modell (Claude Code)
+
+[Neu: 2026-03-12]
+
+Strukturiertes Kontext-Management in Claude Code laesst sich in 5 Ebenen aufteilen, die von aussen nach innen immer spezifischer werden:
+
+| Ebene | Was | Wann geladen | Tipp |
+|-------|-----|-------------|------|
+| 1. CLAUDE.md | Projektbeschreibung, Tech-Stack, Struktur, allgemeine Regeln | Immer, bei jeder Session | Max. 1 Seite. Kurz halten. |
+| 2. Rules | Konventionen fuer bestimmte Dateitypen/Bereiche | Automatisch, wenn Claude im zugehoerigen Verzeichnis arbeitet | Verhindert redundante Wiederholung von Regeln in jedem Skill |
+| 3. Skills | Schritt-fuer-Schritt-Workflows | Bei Aufruf (explizit oder automatisch via YAML-Header) | Claude liest nur den Header, bis er den Skill braucht |
+| 4. Subagents | Isolierte Teilaufgaben mit eigenem Kontext | Wenn Main-Agent sie spawnt | Parallel startbar fuer unabhaengige Aufgaben |
+| 5. MCP Server | Externe Tool-Anbindungen | Wenn Tool aufgerufen wird | CLI bevorzugen wo verfuegbar |
+
+**Rules als Wartungs-Sparer:** Wenn mehrere Skills dieselbe Konvention benoetigen, gehoert sie in eine Rule-Datei -- nicht in jeden Skill kopiert. Aenderungen muessen dann nur einmal gemacht werden.
+
+### ETH-Zuerich-Studie: Weniger Kontext kann besser sein
+
+[Neu: 2026-03-12]
+
+Eine Studie der ETH Zuerich untersuchte, wie Instruktionsdateien (CLAUDE.md, agents.md etc.) die Performance von Coding-Agents beeinflussen:
+
+- Zu viele Anweisungen machen die Aufgabe in den Augen des Agents **komplexer**: Er exploriert mehr, denkt laenger, braucht mehr Schritte.
+- Gilt fuer Claude Code, GitHub Copilot, Cursor und andere Coding Agents.
+- **Automatisch generierte** Kontextdateien verschlechtern die Performance im Schnitt leicht.
+- Empfehlung der ETH: Instruktionsdateien **manuell schreiben** und **so kurz wie moeglich** halten.
+
+**Konsequenz fuer CLAUDE.md-Design:**
+- Nur schreiben, was der Agent bei **jeder Aufgabe** wissen muss
+- Alles andere in Rules, Skills oder Subagents auslagern
+- Periodisch aufraumen: Was hat sich bewaehrt? Was ist redundant?
+
+Quelle: warum-dein-claude-code-agent-wichtigen-kontext-vergisst (2026-03-12)
+
 ## Quellen
 - Rendle-Architektur (v3-v5) -- Grundprinzip "Dateien als Gedaechtnis", project-status.md Konvention
 - Praxiserfahrung aus Team-Migrationen -- Sync-Probleme bei mehreren Statusdateien
 - 2026-03-08_ai-agents-full-course-2026-master-agentic-ai-2-hours.md (2026-03-08) -- Iceberg-Technik, Auto-Compaction, strategisches vs. naives Context Loading
 - 2026-03-08_agi-ist-da-warum-spricht-niemand-drber.md (2026-03-08) -- METR-Benchmark, Task-Horizon-Daten fuer GPT-4 und Claude Opus 4.6, exponentielle Wachstumskurve.
 - ConTaktArt /track-Skill (2026-03-08, aktualisiert 2026-03-09) -- Praxisbeispiel: Zuerst Fork auf Haiku, dann nach UX-Problemen auf Inline umgestellt (Fork hatte keinen Session-Kontext, fragte User nach Zusammenfassung)
+- 2026-03-12_warum-dein-claude-code-agent-wichtigen-kontext-vergisst.md (2026-03-12) -- Fuenf-Ebenen-Modell (CLAUDE.md, Rules, Skills, Subagents, MCP), ETH-Zuerich-Studie zu Instruktionsdatei-Laenge, Rules als Wartungs-Sparer
+- 2026-03-12_claude-code-20-has-arrived-its-insane.md (2026-03-12) -- /loop vs. Scheduled Tasks als zwei Automatisierungsebenen, Session-Binding und Ablauf-Logik, Konsequenzen fuer Skill-Design bei Scheduled-Task-Einsatz

@@ -67,6 +67,28 @@ Jedes Team bekommt diese Regel in seiner CLAUDE.md:
 
 Nicht jedes Problem braucht einen neuen Skill. Manchmal fehlt dem Agent nur der Auslöser im richtigen Moment -- dann reicht ein Bedingungssatz in CLAUDE.md statt eines neuen Workflows.
 
+### Tool-Registry: CLI-Tools teamübergreifend teilen
+
+Wenn mehrere Teams dasselbe externe Tool nutzen (z.B. Notion), will man API-Details nicht in jedem Skill hardcoden. Die Tool-Registry löst das über drei Schichten:
+
+| Schicht | Verantwortung | Wo |
+|---------|--------------|-----|
+| **Skill** | Workflow-Logik ("Frage Notion-Inbox ab") | `.claude/skills/` |
+| **Tool-Registry** | Fähigkeit → Werkzeug ("Notion → notion-cli") | `~/.config/claude-tools/registry.md` |
+| **Config** | IDs, Credentials, DB-Namen | `~/.config/[tool]/` |
+
+Skills beschreiben **was** passieren soll, nicht **wie**. Der Agent findet über die Registry das richtige Tool. Bei Tool-Wechsel wird die Registry aktualisiert -- kein Skill ändert sich.
+
+**Durchsetzung:** Kein MCP, keine API-Details im Skill. Der Agent *kann* nicht direkt API-Calls machen, weil er die Details nicht hat. Stärker als Verhaltensregeln.
+
+Jedes Team bekommt in seiner CLAUDE.md:
+
+```markdown
+## Custom Tools
+Eigene CLI-Tools: siehe `~/.config/claude-tools/registry.md`.
+CLI-Tools immer bevorzugen vor MCP-Servern oder direkten API-Aufrufen.
+```
+
 ### Drei Schutzschichten
 
 Agent-Teams vergessen ihre Regeln. Je länger eine Session, desto stärker verdünnt sich der System Prompt. Dagegen gibt es drei Schichten:
@@ -151,7 +173,7 @@ Danach: `project-builder main` starten.
 
 Nach dem Setup:
 1. **teams.md** -- Trage deine Agent-Teams ein (Name, Pfad, Wissensgebiete)
-2. **config/notion.md** -- Falls Notion: IDs eintragen (siehe `config/notion.md.example`)
+2. **config/notion.md** -- Falls Notion: `notion-cli config init` einrichten, IDs in config/notion.md eintragen
 
 Weitere Integrationen können unter `config/` als Markdown-Datei angelegt werden. Der Agent erkennt sie automatisch.
 
@@ -176,7 +198,9 @@ project-builder/
     starter-main.md            # Sessionstart-Routine: Orchestrator
     starter-team.md            # Sessionstart-Routine: Team-Building
     starter-rebuild.md         # Sessionstart-Routine: Team-Rebuild
-  .claude/skills/              # 13 Skills
+    notion/notion-cli.py       # Notion API CLI (ersetzt MCP Server)
+    notion/notion-cli          # Shell-Wrapper (Symlink: ~/.local/bin/notion-cli)
+  .claude/skills/              # 15 Skills
   .claude/hooks/               # Deterministische Sicherheits-Hooks
 ```
 

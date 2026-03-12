@@ -118,9 +118,24 @@ Die Hierarchie ist gleichzeitig eine Kosten-Hierarchie: Von oben nach unten wird
 - [ ] Delegiert der Main-Agent konsequent statt selbst zu arbeiten?
 - [ ] Gibt es wiederkehrende Aufgaben ohne Skill?
 
+### 7. Neue Kontext-Instanz statt /btw (Claude Code spezifisch)
+
+[Neu: 2026-03-12]
+
+**Problem:** Wer mitten in einer laufenden Claude-Code-Session eine Rueckfrage stellen will (z.B. "Meintest du CSV statt JSON?"), oeffnet eine neue Instanz. Das kostet 10.000-20.000 Tokens Fixkosten allein fuer das Context-Setup -- ohne dass ein einziges nuetzliches Token produziert wird.
+
+**Fix:** Das `/btw`-Feature in Claude Code oeffnet ein Side-Window im selben Thread. Die Frage/Korrektur wird eingefuegt, ohne die laufende Aufgabe zu unterbrechen und ohne neue Instanz zu oeffnen. Syntax: `/btw [Nachricht]` (kein Enter nach /btw allein).
+
+**Wann einsetzen:** Zwischenfragen, Korrekturen ("ich meinte eigentlich..."), kurze Kontextzusaetze waehrend einer laengeren Agenten-Ausfuehrung.
+
+**Voraussetzung:** Terminal-Modus von Claude Code (nicht GUI). Version 2.1.73+. Setting "use terminal" muss aktiv sein.
+
+**Impact:** Vermeidet den 10k-20k Token Fixkosten-Overhead jedes neuen Kontextfensters bei reinen Zwischenfragen.
+
 ## Quellen
 - Rendle-Architektur (v3-v5) -- Grundprinzipien Opus-Vererbung, Modellwahl-Tabelle
 - improved-skill.md (2026-03-06) -- Fork-Skill vs. Agent Token-Vergleich, Inline-Skill-Warnung
 - Claude 2.0 is finally here.md (2026-03-07) -- Modell-Vererbungsverhalten bei context:fork
 - 2026-03-08_ki-am-murksen-hindern.md (2026-03-08) -- Guenstiges Modell + Evaluations-Loop vs. teures Modell direkt, Praxis-Fehlerdaten aus Morphreader-Produktion
 - 2026-03-08_ai-agents-full-course-2026-master-agentic-ai-2-hours.md (2026-03-08) -- 60/30/10 Modell-Mix, Batch-API-Rabatte, Praxis-Kalkulation Lead-Generierung
+- 2026-03-12_claude-codes-new-upgrade-btw.md (2026-03-12) -- /btw Feature als Token-spaerende Zwischenfrage-Methode ohne neue Kontext-Instanz
