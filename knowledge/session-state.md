@@ -270,6 +270,6 @@ Quelle: warum-dein-claude-code-agent-wichtigen-kontext-vergisst (2026-03-12)
 - Praxiserfahrung aus Team-Migrationen -- Sync-Probleme bei mehreren Statusdateien
 - 2026-03-08_ai-agents-full-course-2026-master-agentic-ai-2-hours.md (2026-03-08) -- Iceberg-Technik, Auto-Compaction, strategisches vs. naives Context Loading
 - 2026-03-08_agi-ist-da-warum-spricht-niemand-drber.md (2026-03-08) -- METR-Benchmark, Task-Horizon-Daten fuer GPT-4 und Claude Opus 4.6, exponentielle Wachstumskurve.
-- ConTaktArt /track-Skill (2026-03-08, aktualisiert 2026-03-09) -- Praxisbeispiel: Zuerst Fork auf Haiku, dann nach UX-Problemen auf Inline umgestellt (Fork hatte keinen Session-Kontext, fragte User nach Zusammenfassung)
+- Praxis-Team /track-Skill (2026-03-08, aktualisiert 2026-03-09) -- Praxisbeispiel: Zuerst Fork auf Haiku, dann nach UX-Problemen auf Inline umgestellt (Fork hatte keinen Session-Kontext, fragte User nach Zusammenfassung)
 - 2026-03-12_warum-dein-claude-code-agent-wichtigen-kontext-vergisst.md (2026-03-12) -- Fuenf-Ebenen-Modell (CLAUDE.md, Rules, Skills, Subagents, MCP), ETH-Zuerich-Studie zu Instruktionsdatei-Laenge, Rules als Wartungs-Sparer
 - 2026-03-12_claude-code-20-has-arrived-its-insane.md (2026-03-12) -- /loop vs. Scheduled Tasks als zwei Automatisierungsebenen, Session-Binding und Ablauf-Logik, Konsequenzen fuer Skill-Design bei Scheduled-Task-Einsatz
