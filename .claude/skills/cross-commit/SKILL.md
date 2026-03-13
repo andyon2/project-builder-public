@@ -22,8 +22,7 @@ Lies `teams.md`. Extrahiere alle Zeilen aus der Teams-Tabelle.
 ```bash
 ENV=$(cat $HOME/.environment)
 ```
-- `ENV` ist `local` oder `server` → nur Teams mit Server=`hetzner`
-- `ENV` ist `algron` → nur Teams mit Server=`algron`
+Nur Teams verarbeiten, deren `Server`-Spalte in `teams.md` zur aktuellen Umgebung passt. Das Mapping von Umgebungswert zu Server-Gruppe steht in der Server-Gruppen-Tabelle in `teams.md`.
 
 Zusaetzlich: Nur Repos mit `ja` in der PB-Managed-Spalte sind relevant. Repos mit `nein` oder `--` werden komplett ignoriert.
 Expandiere `~` zu absolutem Pfad (HOME-Verzeichnis des Users).
@@ -62,9 +61,7 @@ Fehlerbehandlung:
 
 Nach erfolgreichem Push: Lies `config/server.md` und die Server-Gruppen-Tabelle in `teams.md`.
 
-Bestimme den SSH-Host anhand der aktuellen Umgebung:
-- `local` oder `server` → SSH-Host: `my-server`
-- `algron` → SSH-Host: `algron-server`
+Bestimme den SSH-Host anhand der aktuellen Umgebung und der Server-Gruppen-Tabelle in `teams.md`.
 
 Fuer jedes erfolgreich gepushte Repo: Pruefe ob es auf dem Server existiert und pullen:
 
@@ -88,7 +85,7 @@ Regeln:
 **Uebersprungen:** ~/projekt-c, ~/projekt-d (keine Aenderungen)
 **Nicht berechtigt:** ~/projekt-f (PB-Managed=nein)
 
-**Server-Sync (my-server):**
+**Server-Sync ([ssh-host]):**
   ✓ projekt-a, projekt-b (gepullt)
   ✗ projekt-e (Divergenz — manuell loesen)
   — projekt-c (nicht gepusht, kein Sync)

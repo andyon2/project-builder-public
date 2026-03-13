@@ -16,7 +16,7 @@ Project Builder löst das durch eine Architektur-Philosophie (das "Rendle-Prinzi
 
 **Teams verbessern:** Audit-Ergebnisse anwenden: Backups, Safe Fixes, Agent-zu-Skill-Konvertierungen, CLAUDE.md-Update.
 
-**Teams rebuilden:** Operatives Wissen aus einem bestehenden Team extrahieren und als Grundlage für einen Neubau verwenden. Die Extraktion fließt in den 4-Phasen-Flow ein -- nichts geht verloren.
+**Teams rebuilden:** Operatives Wissen aus einem bestehenden Team extrahieren und als Grundlage für einen Neubau verwenden. `/extract-team` lässt den alten Agent sich selbst beschreiben -- über einen 22-Fragen-Katalog zu Identität, Erfahrungswissen und User-Interaktion. Der Agent kennt sein System besser als ein externer Leser. Die Extraktion fließt in den 4-Phasen-Flow ein -- nichts geht verloren.
 
 **Wissen aufbauen:** Integriert Wissensquellen (YouTube-Transcripts, Artikel, Notion-Inbox) in eine kuratierte Knowledge-Base. Verdichtet statt sammelt -- neues Wissen wird gegen den bestehenden Stand geprüft.
 
@@ -218,18 +218,22 @@ Verdichtetes Wissen zu KI-Agent-Architektur. Wird über `/learn` aktualisiert, n
 
 ## Für Fortgeschrittene
 
-### Multi-Environment-Workflow
+### Multi-Server-Architektur
 
-Agent-Teams können auf mehreren Maschinen laufen (lokal + Server). Git ist das einzige Sync-Medium -- kein SSH-Sync, keine geteilten Dateisysteme.
+Agent-Teams können auf mehreren Servern laufen. Git ist das einzige Sync-Medium -- kein SSH-Sync, keine geteilten Dateisysteme.
 
 ```
-Lokal:   Sessionstart → git pull → arbeiten → commit → push
-Server:  Sessionstart → git pull → arbeiten → commit → push
+Server A:  Sessionstart → git pull → arbeiten → commit → push
+Server B:  Sessionstart → git pull → arbeiten → commit → push
 ```
 
-Jeder Agent ist selbst dafür verantwortlich, bei Sessionstart den neuesten Stand zu holen. Das Starter-Script fragt automatisch, ob gepullt werden soll, wenn der Remote neuere Commits hat.
+Jeder Agent ist selbst dafür verantwortlich, bei Sessionstart den neuesten Stand zu holen.
 
-**Umgebungserkennung:** Eine Datei `~/.environment` (Inhalt: `local` oder `server`) sagt dem Agent, wo er läuft. Einmal pro Maschine gesetzt, außerhalb aller Repos.
+**Server-Gruppen.** `teams.md` hat eine `Server`-Spalte, die jedes Team einem Server zuordnet. Eine Server-Gruppen-Tabelle mappt Umgebungswerte auf SSH-Hosts. Skills wie `/learn` und `/cross-commit` filtern automatisch: Jede PB-Instanz verarbeitet nur Teams auf ihrem eigenen Server.
+
+**Umgebungserkennung.** Eine Datei `~/.environment` (z.B. `local`, `server`, `staging`) sagt dem Agent, wo er läuft. Einmal pro Maschine gesetzt, außerhalb aller Repos.
+
+**Mehrere PB-Instanzen.** Das PB-Repo kann auf mehreren Servern geklont werden. Alle Instanzen teilen `knowledge/` und Skills über Git. Die `teams.md`-Einträge bestimmen, welche Instanz welche Teams managed. Keine Konflikte, solange jedes Team genau einem Server zugeordnet ist.
 
 ### Dezentrale Dispatches: Wissen zwischen Teams routen
 
