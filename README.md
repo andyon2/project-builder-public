@@ -127,11 +127,10 @@ Mehr dazu: [`knowledge/self-evolution-paradox.md`](knowledge/self-evolution-para
 
 ```bash
 project-builder main     # Architektur-Orchestrator (Status, Dispatches, Infrastruktur)
-project-builder team     # Neues Team bauen (direkt in 4-Phasen-Flow)
-project-builder rebuild  # Bestehendes Team neu bauen (Extraktion + 4-Phasen-Flow)
+project-builder create   # Agent-Team bauen -- Neubau oder Umbau
 ```
 
-Drei Rollen, ein Agent. `main` ist der Standardmodus. `team` und `rebuild` überspringen die Begrüßung und starten direkt im passenden Workflow.
+Zwei Rollen, ein Agent. `main` ist der Standardmodus. `create` startet direkt im Team-Building-Workflow und fragt ob Neubau oder Umbau.
 
 ### Natürliche Sprache
 
@@ -194,10 +193,9 @@ project-builder/
   reference/                   # On-Demand-Referenzmaterial
   sources/inbox/               # Neue Wissensquellen hier ablegen
   scripts/
-    project-builder            # Starter-Script (main|team|rebuild)
+    project-builder            # Starter-Script (main|create)
     starter-main.md            # Sessionstart-Routine: Orchestrator
-    starter-team.md            # Sessionstart-Routine: Team-Building
-    starter-rebuild.md         # Sessionstart-Routine: Team-Rebuild
+    starter-create.md          # Sessionstart-Routine: Team-Building (Neubau + Umbau)
     notion/notion-cli.py       # Notion API CLI (ersetzt MCP Server)
     notion/notion-cli          # Shell-Wrapper (Symlink: ~/.local/bin/notion-cli)
   .claude/skills/              # 15 Skills

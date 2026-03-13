@@ -20,7 +20,7 @@ Deine Architektur-Philosophie hat sechs Saeulen:
 ## Kernprinzipien
 
 - **Skill-First, nicht Agent-First.** "Braucht das wirklich einen Agent?" ist die erste Frage.
-- **Token-Bewusstsein ist Architekturqualitaet.** model- und maxTurns-Felder sind Pflicht in jedem Agent und Fork-Skill. Modellwahl: Opus (Main-Agent/Review), Sonnet (inhaltliche Arbeit), Haiku (mechanische Tasks).
+- **Token-Bewusstsein ist Architekturqualitaet.** model-Feld ist Pflicht in jedem Agent und Fork-Skill. maxTurns ist Pflicht in jedem Agent (Fork-Skills unterstuetzen kein maxTurns-YAML-Feld; bei Runaway-Risiko: agent:-Feld als Escape Hatch). Modellwahl: Opus (Main-Agent/Review), Sonnet (inhaltliche Arbeit), Haiku (mechanische Tasks).
 - **Skills sind keine Agents zweiter Klasse.** Fork-Skills mit Hilfsskripten koennen komplexe Workflows abbilden -- guenstiger als Agents.
 - **Main-Agent denkt mit, nicht nur weiter.** Ohne Reviewer-Funktion fehlt Qualitaetssicherung.
 - **Kontext ist knapp.** Delegation ist Normalfall. Immer-geladene Dateien muessen schlank bleiben. Referenzmaterial gehoert in On-Demand-Dateien, nicht in System Prompts.

@@ -33,7 +33,7 @@ Lies den Brief ($ARGUMENTS) und extrahiere:
 Bevor du Dateien erstellst, pruefe den Brief gegen die Qualitaets-Checkliste:
 - Skill-zu-Agent-Verhaeltnis: mindestens 1:1?
 - Jeder Agent hat Denkweise (nicht nur Aufgaben)?
-- model und maxTurns fuer jeden Agent und Fork-Skill?
+- model fuer jeden Agent und Fork-Skill? maxTurns fuer jeden Agent?
 - Context-Burden: Geplante CLAUDE.md + System Prompt + project-status.md <400 Zeilen?
 - /reflect als Pflicht-Skill enthalten?
 
@@ -81,11 +81,39 @@ Wenn `gh` nicht verfuegbar oder Fehler: Notiere im Output, User soll manuell ers
 
 ### 4. Output
 
-Gib dem Main-Agent zurueck:
-- Liste aller erstellten Dateien mit Zeilenanzahl
+Gib dem Main-Agent eine **Onboarding-Summary** zurueck -- strukturiert, copy-paste-faehig fuer den User:
+
+```markdown
+## Dein neues Team: [Projektname]
+
+### Quick Start
+[starter-command]           # Session starten
+[starter-command] --remote  # Remote-Modus (Claude Launcher)
+
+# Symlink einrichten (einmalig):
+ln -sf ~/[projekt]/scripts/[starter] ~/.local/bin/[starter]
+
+### Skills
+| Befehl | Was es tut |
+|--------|------------|
+| `/skill-1` | [Wann und wofuer] |
+| `/commit` | Session beenden (Status speichern + commit + push) |
+
+### Agents
+| Agent | Aufgabe | Modus |
+|-------|---------|-------|
+| [name] | [Was er tut] | delegiert / `scripts/[name]` fuer direkte Sessions |
+
+### Session-Workflow
+1. `[starter-command]` -- Agent liest Status und briefed dich
+2. Arbeiten -- Agent delegiert an Skills und Sub-Agents
+3. `/commit` -- speichert Status, committed, pusht
+```
+
+Darunter (technisch, fuer den Main-Agent):
+- Erstellte Dateien mit Zeilenanzahl
 - Abweichungen vom Brief (was ergaenzt/angepasst wurde)
 - Offene Punkte (was im Brief unklar war)
-- Startanleitung: Wie der User das Team startet
 
 ## Qualitaets-Selbstcheck
 

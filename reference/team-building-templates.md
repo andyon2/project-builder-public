@@ -520,11 +520,7 @@ Der Main-Agent delegiert an `/build-team` mit strukturiertem Brief:
 **Remote-Server-Deployment** (optional):
 Falls ein Remote-Server konfiguriert ist, Repo dort klonen und Shortcut einrichten. Falls kein SSH-Zugang: Dem User die Befehle ausgeben.
 
-**Startanleitung:**
-- Main-Agent starten: `scripts/[name]`
-- Skills: `/skill-name`
-- Session beenden: Agent aktualisiert Status, fragt nach Commit+Push
-- Direkte Sessions: Main-Agent sagt wann, `scripts/[agent-name]` starten
+**Onboarding-Summary:** /build-team generiert eine strukturierte Abschluss-Summary (Quick Start, Skills-Tabelle, Agents-Tabelle, Session-Workflow). Siehe SKILL.md Section 4 fuer das Format.
 
 ---
 

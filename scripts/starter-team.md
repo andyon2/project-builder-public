@@ -1,1 +1,0 @@
-Der User will ein neues Agent-Team bauen. Starte direkt mit Phase 1 (Interview). Lies reference/team-building-templates.md fuer die Fragen. Arbeite ALLE Punkte durch -- nichts ueberspringen. Lies reference/domain-learnings.md fuer Erfahrungen aus frueheren Builds.

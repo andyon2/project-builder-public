@@ -8,10 +8,19 @@ MARKER="$CLAUDE_PROJECT_DIR/.git/commit-via-skill"
 if [[ -f "$MARKER" ]]; then
   rm -f "$MARKER"
   cat <<'EOF'
-{"decision": "allow"}
+{
+  "hookSpecificOutput": {
+    "permissionDecision": "allow"
+  }
+}
 EOF
 else
   cat <<'EOF'
-{"decision": "block", "reason": "Commit blockiert: Nutze /commit statt manuellem git commit. /commit stellt sicher dass /track vorher laeuft."}
+{
+  "hookSpecificOutput": {
+    "permissionDecision": "deny"
+  },
+  "systemMessage": "Commit blockiert: Nutze /commit statt manuellem git commit. /commit stellt sicher dass /track vorher laeuft."
+}
 EOF
 fi

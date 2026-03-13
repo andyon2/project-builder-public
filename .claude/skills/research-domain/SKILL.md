@@ -76,6 +76,18 @@ Fokus auf **verwertbare** Erkenntnisse -- keine allgemeinen Einfuehrungstexte. S
 - [URL] -- [Kurzbeschreibung, was diese Quelle beigetragen hat]
 ```
 
+### 4a. Domain-Learnings aktualisieren
+
+Trage die wichtigsten Erkenntnisse in `reference/domain-learnings.md` ein (Edit, nie Write):
+
+```markdown
+## [Domaene] ([YYYY-MM-DD])
+- [3 wichtigste Erkenntnisse als Bullets]
+- Briefing: briefings/research-[domaene-slug].md
+```
+
+Falls die Datei nicht existiert: Mit Write erstellen, Ueberschrift `# Domain-Learnings` + erster Eintrag.
+
 ### 4. Zusammenfassung
 
 Gib dem Main-Agent zurueck:

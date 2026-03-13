@@ -28,6 +28,27 @@ Das CLAUDE.md im Projektverzeichnis ist der projektspezifische System-Prompt des
 
 Wichtig fuer Token-Budget: Das CLAUDE.md muss kompakt bleiben. Mit wachsenden gelernten Regeln periodisch konsolidieren (siehe Selbst-modifizierendes CLAUDE.md).
 
+**Blueprint-Dateien als CLAUDE.md-Erweiterung:** [Neu: 2026-03-13] Fuer wiederkehrende Bauaufgaben (Dashboards, Wizards, Landing Pages) lohnt es sich, wiederverwendbare Architektur-Blueprints als separate Markdown-Dateien neben dem CLAUDE.md zu lagern (z.B. `dashboard-blueprint.md`, `wizard-blueprint.md`). Bei Projektinitialisierung werden sie dem Agenten mitgegeben -- kein Neuerfinden der Rad-Struktur. Dies ist eine Konkretisierung des bestehenden `reference/`-Patterns (On-Demand-Dateien statt CLAUDE.md-Bloat) auf Projektebene.
+
+## Auto-Research-Pattern: Autonome Experimentier-Loops
+
+[Neu: 2026-03-13]
+
+Ein Agent laeuft in einer engen Feedback-Schleife: Hypothese formulieren → Experiment ausfuehren (per API/CLI) → objektive Metrik messen → Gewinner behalten → Erkenntnisse in Resource-Datei akkumulieren → naechste Hypothese auf Basis der Lernkurve.
+
+**Drei Bedingungen fuer sinnvollen Einsatz:**
+- **Objektive Metrik:** Eine Zahl die klar besser/schlechter sagt. Keine subjektiven Metrics.
+- **API-Zugang fuer Input-Veraenderungen:** Der Agent muss den Stimulus aendern koennen. Ohne API: nur manuelle Varianten moeglich.
+- **Schneller Feedback-Loop:** Je schneller die Messung (5 Min bis 4 Stunden), desto schneller konvergiert das System.
+
+**Resource-Datei als Gedaechtnis:** Erkenntnisse aus allen Experimenten akkumulieren in einer strukturierten Datei. Spaetere Laeufe generieren Hypothesen auf Basis des Gelernten. Ab ~500 Runs: periodische Konsolidierung noetig.
+
+**Deployment:** GitHub Actions Cron oder Modal. Siehe `/loop` und Scheduled Tasks in session-state.md fuer Claude-Code-interne Alternativen.
+
+**Abgrenzung:** WAT deployt deterministische Workflows ("das Gleiche besser machen"). Auto-Research deployt explorative Experimente ("autonom herausfinden was besser ist").
+
+Quelle: claude-code-autoresearch-self-improving-ai (2026-03-13)
+
 ## Quellen
 - Anthropic Skill Creator (offizieller Plugin, 2026) -- Grundlagen Skill-Architektur, YAML-Header, Trigger Tuning
 - Anthropic PDF: Skill Best Practices (33 Seiten) -- Skill-Typen, Wartung, Evals
@@ -40,6 +61,8 @@ Wichtig fuer Token-Budget: Das CLAUDE.md muss kompakt bleiben. Mit wachsenden ge
 - 2026-03-08_agi-ist-da-warum-spricht-niemand-drber.md (2026-03-08) -- METR-Benchmark (Aufgabenhorizont 14,5h fuer Claude Opus 4.6), Multi-Agent-Parallelisierung, In-Context-Learning als AGI-Kriterium.
 - Knowledge-Architektur-Analyse eines Content-Teams (2026-03-08) -- /learn als Standard-Skill, Infrastruktur-Skills als Architektur-Baustein, /track als Statusverwaltungs-Skill, Stufen-Modell fuer Knowledge-Ingestion, Naming-Konsistenz /integrate-source → /learn.
 - 2026-03-12_claude-code-20-has-arrived-its-insane.md (2026-03-12) -- Skills 2.0 Eval-Workflow (kriterienbasiertes Scoring, HTML-Report, AB-Testing, Sub-Agent Parallelisierung), Leaner-Skills durch Eval-basiertes Reference-File-Pruning, Google Workspace CLI als Bestaetigung CLI>MCP.
+- claude-code-autoresearch-self-improving-ai.md (2026-03-13) -- Auto-Research-Pattern: Autonome Experimentier-Loops mit objektiver Metrik, Bedingungen fuer sinnvollen Einsatz, Resource-Datei als Lern-Gedaechtnis.
+- claude-code-baut-ein-vermieter-portal-in-37-min.md (2026-03-13) -- Blueprint-Dateien als CLAUDE.md-Erweiterung fuer wiederkehrende Bauaufgaben.
 
 ## Wann ist etwas ein Skill (nicht ein Agent)?
 
@@ -235,7 +258,10 @@ argument-hint: "[parameter]"  # Optional - Autocomplete-Hinweis
 allowed-tools: "Read, Bash"   # Optional - Tools ohne Permission-Prompt
 context: fork                  # Optional - isolierter Subagent
 model: haiku                   # Pflicht bei fork - sonst erbt Main-Agent-Modell
+agent: my-agent                # Optional - referenziert Agent aus .claude/agents/ (fuer maxTurns o.ae.)
 ```
+
+**Hinweis:** Fork-Skills unterstuetzen kein `maxTurns`-Feld direkt. Bei Skills mit Runaway-Risiko: eigenen Agent unter `.claude/agents/` mit `maxTurns` anlegen und via `agent:`-Feld referenzieren. Fuer endliche Skills (lesen → analysieren → schreiben) ist das nicht noetig.
 
 ## Trigger Tuning
 

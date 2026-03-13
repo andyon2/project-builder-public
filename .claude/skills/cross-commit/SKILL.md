@@ -17,7 +17,15 @@ Du fuehrst Cross-Repo-Git-Operationen durch. NUR getrackte Dateien committen. De
 ## Schritt 1: Repos aus teams.md lesen
 
 Lies `teams.md`. Extrahiere alle Zeilen aus der Teams-Tabelle.
-Nur Repos mit `ja` in der PB-Commit-Spalte sind relevant. Repos mit `nein` oder `--` werden komplett ignoriert.
+
+**Umgebungsfilter:**
+```bash
+ENV=$(cat $HOME/.environment)
+```
+- `ENV` ist `local` oder `server` → nur Teams mit Server=`hetzner`
+- `ENV` ist `algron` → nur Teams mit Server=`algron`
+
+Zusaetzlich: Nur Repos mit `ja` in der PB-Managed-Spalte sind relevant. Repos mit `nein` oder `--` werden komplett ignoriert.
 Expandiere `~` zu absolutem Pfad (HOME-Verzeichnis des Users).
 
 ## Schritt 2: Aenderungen pruefen
@@ -52,12 +60,16 @@ Fehlerbehandlung:
 
 ## Schritt 4: Server-Sync
 
-Nach erfolgreichem Push: Lies `config/server.md` fuer die Server-Konfiguration.
+Nach erfolgreichem Push: Lies `config/server.md` und die Server-Gruppen-Tabelle in `teams.md`.
+
+Bestimme den SSH-Host anhand der aktuellen Umgebung:
+- `local` oder `server` → SSH-Host: `my-server`
+- `algron` → SSH-Host: `algron-server`
 
 Fuer jedes erfolgreich gepushte Repo: Pruefe ob es auf dem Server existiert und pullen:
 
 ```bash
-ssh my-server "cd ~/claude-projects/[projekt] && git pull --ff-only origin main" 2>&1
+ssh [SSH-HOST] "cd ~/claude-projects/[projekt] && git pull --ff-only origin main" 2>&1
 ```
 
 Regeln:
