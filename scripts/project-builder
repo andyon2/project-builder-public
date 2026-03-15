@@ -7,6 +7,34 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 cd "$PROJECT_ROOT"
 
+# Rolle bestimmen (Standard: build)
+ROLE="${1:-build}"
+
+case "$ROLE" in
+  build|create)
+    STARTER_FILE="$SCRIPT_DIR/starter-create.md"
+    ;;
+  manage)
+    STARTER_FILE="$SCRIPT_DIR/starter-main.md"
+    ;;
+  architect)
+    STARTER_FILE="$SCRIPT_DIR/starter-main.md"
+    ;;
+  *)
+    echo "Usage: project-builder [build|manage|architect]"
+    echo ""
+    echo "  build      Teams bauen, rebuilden (Standard)"
+    echo "  manage     Bestehende Teams betreuen (Audit, Wissen, Repos)"
+    echo "  architect  An der PB-Architektur arbeiten (Fortgeschritten)"
+    exit 1
+    ;;
+esac
+
+if [[ ! -f "$STARTER_FILE" ]]; then
+  echo "Fehler: $STARTER_FILE nicht gefunden."
+  exit 1
+fi
+
 # Git-Remote-Check: Warnung wenn Remote neuere Commits hat
 if git rev-parse --git-dir &>/dev/null; then
     git fetch origin --quiet 2>/dev/null || true
@@ -26,5 +54,7 @@ if git rev-parse --git-dir &>/dev/null; then
     fi
 fi
 
+STARTER_CONTENT=$(cat "$STARTER_FILE")
+
 exec claude --system-prompt-file "$PROJECT_ROOT/main-agent.md" \
-  "Sessionstart: Lies project-status.md und dispatches.md, pruefe ob neue Quellen in sources/inbox/ liegen, dann brief mich wo wir stehen und was ansteht. Reminder: Wenn ich die Session beende, frage mich ob du committen und pushen sollst."
+  "$STARTER_CONTENT"

@@ -1,46 +1,108 @@
+<p align="center">
+  <b>Project Builder</b>
+</p>
+
 # Project Builder
 
-Ein Claude-Code-Agent der andere Agent-Teams entwirft, baut, auditiert und verbessert.
+<p align="center">
+  <a href="https://github.com/andyon2/project-builder-public/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License: MIT"></a>
+  <a href="https://claude.ai"><img src="https://img.shields.io/badge/Built%20for-Claude%20Code-blueviolet?style=for-the-badge" alt="Built for Claude Code"></a>
+  <img src="https://img.shields.io/badge/Skills-14-blue?style=for-the-badge" alt="14 Skills">
+</p>
 
-## Das Problem
+**Ein Claude-Code-Agent der andere Agent-Teams entwirft, baut, auditiert und verbessert.** Claude Code kann fast alles -- aber ohne Struktur entsteht Chaos. Agent-Teams werden zu groß, Kontextfenster laufen voll, Skills und Agents überlappen sich, und nach ein paar Sessions vergisst der Agent seine eigenen Regeln. Project Builder löst das durch eine Architektur-Philosophie (das "Rendle-Prinzip") und ein Set von Skills, die diese Philosophie durchsetzen.
 
-Claude Code kann fast alles -- aber ohne Struktur entsteht Chaos. Agent-Teams werden zu groß, Kontextfenster laufen voll, Skills und Agents überlappen sich, und nach ein paar Sessions vergisst der Agent seine eigenen Regeln.
+## Inhaltsverzeichnis
 
-Project Builder löst das durch eine Architektur-Philosophie (das "Rendle-Prinzip") und ein Set von Skills, die diese Philosophie durchsetzen -- auch auf sich selbst.
+- [Kernfunktionen](#kernfunktionen)
+  - [Build -- Teams erstellen](#build----teams-erstellen)
+  - [Manage -- bestehende Teams betreuen](#manage----bestehende-teams-betreuen)
+- [Quick Install](#quick-install)
+- [Benutzung](#benutzung)
+- [Architektur: Das Rendle-Prinzip](#architektur-das-rendle-prinzip)
+- [Unter der Haube](#unter-der-haube)
+- [Für Fortgeschrittene](#für-fortgeschrittene)
+- [Projektstruktur](#projektstruktur)
+- [Knowledge-Base](#knowledge-base)
+- [Konfiguration](#konfiguration)
 
-## Was er kann
+---
 
-**Teams bauen:** Du beschreibst einen Anwendungsfall. Der Project Builder klärt mit dir die Anforderungen, recherchiert die Domäne und erstellt das komplette Team: CLAUDE.md, System Prompt, Agents, Skills, Scripts, Verzeichnisstruktur. Vier Phasen mit zwei Gates -- du bestätigst bevor gebaut wird.
+## Kernfunktionen
 
-**Teams auditieren:** Bestehende Agent-Teams auf Token-Verschwendung, fehlende Felder, falsche Skill/Agent-Balance und Anti-Patterns prüfen. Read-only -- ändert nichts ohne OK.
+### Build -- Teams erstellen
 
-**Teams verbessern:** Audit-Ergebnisse anwenden: Backups, Safe Fixes, Agent-zu-Skill-Konvertierungen, CLAUDE.md-Update.
+<table>
+<tr><td><b>Teams bauen</b></td><td>Du beschreibst einen Anwendungsfall. Vier Phasen mit zwei Gates: Interview → Research → Synthese → Build. Der Agent recherchiert die Domäne, entwirft die Architektur und erstellt das komplette Team: CLAUDE.md, System Prompt, Agents, Skills, Scripts, Verzeichnisstruktur. Du bestätigst bevor gebaut wird.</td></tr>
+<tr><td><b>Teams rebuilden</b></td><td>Operatives Wissen aus einem bestehenden Team extrahieren und als Grundlage für einen Neubau verwenden. <code>/extract-team</code> lässt den alten Agent sich selbst beschreiben -- über einen 22-Fragen-Katalog zu Identität, Erfahrungswissen und User-Interaktion. Der Agent kennt sein System besser als ein externer Leser. Die Extraktion fließt in den 4-Phasen-Flow ein -- nichts geht verloren.</td></tr>
+<tr><td><b>Content prüfen</b></td><td>Findet KI-erkennbare Muster in Texten (GPTisms, Claude-typische Formulierungen, strukturelle Tells) und gibt konkrete Fix-Vorschläge.</td></tr>
+</table>
 
-**Teams rebuilden:** Operatives Wissen aus einem bestehenden Team extrahieren und als Grundlage für einen Neubau verwenden. `/extract-team` lässt den alten Agent sich selbst beschreiben -- über einen 22-Fragen-Katalog zu Identität, Erfahrungswissen und User-Interaktion. Der Agent kennt sein System besser als ein externer Leser. Die Extraktion fließt in den 4-Phasen-Flow ein -- nichts geht verloren.
+### Manage -- bestehende Teams betreuen
 
-**Wissen aufbauen:** Integriert Wissensquellen (YouTube-Transcripts, Artikel, Notion-Inbox) in eine kuratierte Knowledge-Base. Verdichtet statt sammelt -- neues Wissen wird gegen den bestehenden Stand geprüft.
+<table>
+<tr><td><b>Teams auditieren</b></td><td>Bestehende Agent-Teams auf Token-Verschwendung, fehlende Felder, falsche Skill/Agent-Balance und Anti-Patterns prüfen. Read-only -- ändert nichts ohne OK.</td></tr>
+<tr><td><b>Teams verbessern</b></td><td>Audit-Ergebnisse anwenden: Backups, Safe Fixes, Agent-zu-Skill-Konvertierungen, CLAUDE.md-Update.</td></tr>
+<tr><td><b>Wissen aufbauen</b></td><td>Integriert Quellen (YouTube-Transcripts, Artikel, Notion-Inbox) in eine kuratierte Knowledge-Base. Verdichtet statt sammelt -- neues Wissen wird gegen den bestehenden Stand geprüft.</td></tr>
+<tr><td><b>Wissen routen</b></td><td>Erkenntnisse werden automatisch an die richtigen Teams verteilt. <code>/learn</code> matcht neue Quellen gegen die Wissensgebiete in <code>teams.md</code> und schreibt Dispatch-Dateien direkt in die Team-Repos.</td></tr>
+<tr><td><b>Multi-Repo</b></td><td><code>/cross-commit</code> committet und pusht Änderungen in allen verwalteten Projekten auf einmal. Der Agent weiß, welche Repos er verwaltet und welche nicht.</td></tr>
+<tr><td><b>Multi-Server</b></td><td>Agent-Teams können auf mehreren Servern laufen. Git als einziges Sync-Medium. Jede PB-Instanz verarbeitet automatisch nur die Teams auf ihrem eigenen Server.</td></tr>
+</table>
 
-**Content prüfen:** Findet KI-erkennbare Muster in Texten (GPTisms, Claude-typische Formulierungen, strukturelle Tells) und gibt konkrete Fix-Vorschläge.
+---
 
-**Über Repos hinweg arbeiten:** `/cross-commit` committet und pusht Änderungen in allen verwalteten Projekten auf einmal. Der Agent weiß, welche Repos er verwaltet und welche nicht.
+## Quick Install
+
+```bash
+git clone https://github.com/andyon2/project-builder-public.git ~/project-builder
+cd ~/project-builder && ./scripts/setup.sh
+```
+
+Das Setup-Script erstellt Instanz-Dateien aus Templates, richtet optionale Integrationen ein (Notion, YouTube-Transcripts) und installiert den `project-builder`-Shortcut.
+
+Danach:
+
+```bash
+source ~/.bashrc                 # Shell neu laden
+project-builder                  # Agent-Team bauen -- los geht's
+```
+
+---
+
+## Benutzung
+
+```bash
+project-builder          # Teams bauen und rebuilden (Standard)
+project-builder manage   # Bestehende Teams betreuen (Audit, Wissen, Dispatches, Multi-Repo)
+```
+
+Sag dem Agent was du willst -- er wählt den richtigen Skill:
+
+- *"Bau mir ein Team für mein Coaching-Business"*
+- *"Prüf mal das Team in ~/mein-projekt"*
+- *"Setz die Empfehlungen um"*
+- *"Dieser Text klingt zu sehr nach KI"*
+
+| Befehl | Wann |
+|--------|------|
+| `/commit` | Sessionende: commit + push in einem Schritt |
+
+---
 
 ## Architektur: Das Rendle-Prinzip
 
-Sechs Säulen, die jedes Team durchziehen:
+Sechs Säulen, die jedes gebaute Team durchziehen:
 
-1. **Trennung Kontext/Identität.** CLAUDE.md = Projektfakten (für alle Agents gleich). System Prompt = Identität (wer der Agent ist, wie er denkt). Nie vermischen.
+| # | Säule | Bedeutung |
+|---|-------|-----------|
+| 1 | **Trennung Kontext/Identität** | CLAUDE.md = Projektfakten (für alle Agents gleich). System Prompt = Identität (wer der Agent ist, wie er denkt). Nie vermischen. |
+| 2 | **Agents mit Denkweise** | Nicht "Du machst X" sondern "Du denkst wie ein erfahrener X". Nur Rollen die eigenes Urteilsvermögen brauchen werden Agents. Ein Agent denkt. Ein Skill führt aus. |
+| 3 | **Zentraler Orchestrator** | Delegiert, reviewed, challenged. Nicht selbst Spezialist. |
+| 4 | **Dateien als Gedächtnis** | Eine `project-status.md` pro Projekt. Markdown-Dateien als Kommunikation zwischen Sessions. Kurz gehalten (<50 Zeilen). |
+| 5 | **Kontextschutz** | Das Kontextfenster ist die knappste Ressource. Referenzmaterial wird nur bei Bedarf geladen, nicht beim Start. Zwischenergebnisse in Dateien, nicht im Chat. |
+| 6 | **Skill-First** | Jede Aufgabe startet als Skill-Kandidat. Agent nur bei eigenem Urteilsvermögen. "Braucht das wirklich einen Agent?" ist die erste Frage. |
 
-2. **Agents mit Denkweise.** Nicht "Du machst X" sondern "Du denkst wie ein erfahrener X". Nur Rollen die eigenes Urteilsvermögen brauchen werden Agents. Ein Agent denkt. Ein Skill führt aus.
-
-3. **Main-Agent als Orchestrator.** Delegiert, reviewed, challenged. Nicht selbst Spezialist.
-
-4. **Dateien als Gedächtnis.** Eine `project-status.md` pro Projekt. Markdown-Dateien als Kommunikation zwischen Sessions. Kurz gehalten (<50 Zeilen).
-
-5. **Kontextschutz.** Das Kontextfenster ist die knappste Ressource. Referenzmaterial wird nur bei Bedarf geladen, nicht beim Start. Zwischenergebnisse in Dateien, nicht im Chat.
-
-6. **Skill-First.** Jede Aufgabe startet als Skill-Kandidat. Agent nur bei eigenem Urteilsvermögen. "Braucht das wirklich einen Agent?" ist die erste Frage.
-
-### 4-Phasen-Flow für Team-Building
+### 4-Phasen-Flow
 
 Neue Teams entstehen in vier Phasen:
 
@@ -54,40 +116,6 @@ Interview → Research → Synthese → Build
 2. **Research:** Bei unbekannten Domänen recherchiert `/research-domain` das Fachgebiet. Ergebnis: Briefing-Datei + Domain-Knowledge.
 3. **Synthese:** Domänenwissen + Architektur-Prinzipien + User-Anforderungen werden verschmolzen. Konflikte werden identifiziert und gelöst. Gate 2: Du bestätigst den Architektur-Entwurf.
 4. **Build:** `/build-team` erstellt alle Dateien.
-
-Vorher baute der Agent Teams direkt aus dem Interview -- ohne Domänenwissen, ohne Synthese-Schritt. Die Research-Phase schließt diese Lücke.
-
-### Rückwärts-Suche bei Umbau
-
-Hinzufügen und Umbauen sind fundamental verschiedene Operationen. Beim Hinzufügen (neuer Skill, neue Datei) reicht vorwärts denken: "Was muss ich erstellen?" Beim Umbau (Entfernen, Umbenennen, Verantwortlichkeit verschieben) ist Rückwärts-Suche Pflicht: "Was konsumiert das, was ich gerade ändere?"
-
-Jedes Team bekommt diese Regel in seiner CLAUDE.md:
-
-> Vor dem ersten Edit bei strukturellen Änderungen: `grep -r` nach allen Konsumenten des Geänderten. Erst dann editieren.
-
-Nicht jedes Problem braucht einen neuen Skill. Manchmal fehlt dem Agent nur der Auslöser im richtigen Moment -- dann reicht ein Bedingungssatz in CLAUDE.md statt eines neuen Workflows.
-
-### Tool-Registry: CLI-Tools teamübergreifend teilen
-
-Wenn mehrere Teams dasselbe externe Tool nutzen (z.B. Notion), will man API-Details nicht in jedem Skill hardcoden. Die Tool-Registry löst das über drei Schichten:
-
-| Schicht | Verantwortung | Wo |
-|---------|--------------|-----|
-| **Skill** | Workflow-Logik ("Frage Notion-Inbox ab") | `.claude/skills/` |
-| **Tool-Registry** | Fähigkeit → Werkzeug ("Notion → notion-cli") | `~/.config/claude-tools/registry.md` |
-| **Config** | IDs, Credentials, DB-Namen | `~/.config/[tool]/` |
-
-Skills beschreiben **was** passieren soll, nicht **wie**. Der Agent findet über die Registry das richtige Tool. Bei Tool-Wechsel wird die Registry aktualisiert -- kein Skill ändert sich.
-
-**Durchsetzung:** Kein MCP, keine API-Details im Skill. Der Agent *kann* nicht direkt API-Calls machen, weil er die Details nicht hat. Stärker als Verhaltensregeln.
-
-Jedes Team bekommt in seiner CLAUDE.md:
-
-```markdown
-## Custom Tools
-Eigene CLI-Tools: siehe `~/.config/claude-tools/registry.md`.
-CLI-Tools immer bevorzugen vor MCP-Servern oder direkten API-Aufrufen.
-```
 
 ### Drei Schutzschichten
 
@@ -109,7 +137,56 @@ Registriert in `~/.claude/settings.json`, gilt für alle Projekte auf allen Masc
 
 **Post-Compaction-Reminder.** Wenn das Kontextfenster voll wird, komprimiert Claude automatisch den älteren Kontext. Ein Hook injiziert danach die kritischsten Prinzipien zurück -- die, die am stärksten driften.
 
-## Das Selbstentwicklungs-Paradox
+---
+
+## Unter der Haube
+
+<details>
+<summary><b>Tool-Registry</b> -- CLI-Tools teamübergreifend teilen</summary>
+
+<br>
+
+Wenn mehrere Teams dasselbe externe Tool nutzen (z.B. Notion), will man API-Details nicht in jedem Skill hardcoden. Die Tool-Registry löst das über drei Schichten:
+
+| Schicht | Verantwortung | Wo |
+|---------|--------------|-----|
+| **Skill** | Workflow-Logik ("Frage Notion-Inbox ab") | `.claude/skills/` |
+| **Tool-Registry** | Fähigkeit → Werkzeug ("Notion → notion-cli") | `~/.config/claude-tools/registry.md` |
+| **Config** | IDs, Credentials, DB-Namen | `~/.config/[tool]/` |
+
+Skills beschreiben **was** passieren soll, nicht **wie**. Der Agent findet über die Registry das richtige Tool. Bei Tool-Wechsel wird die Registry aktualisiert -- kein Skill ändert sich.
+
+**Durchsetzung:** Kein MCP, keine API-Details im Skill. Der Agent *kann* nicht direkt API-Calls machen, weil er die Details nicht hat. Stärker als Verhaltensregeln.
+
+Jedes Team bekommt in seiner CLAUDE.md:
+
+```markdown
+## Custom Tools
+Eigene CLI-Tools: siehe `~/.config/claude-tools/registry.md`.
+CLI-Tools immer bevorzugen vor MCP-Servern oder direkten API-Aufrufen.
+```
+
+</details>
+
+<details>
+<summary><b>Rückwärts-Suche bei Umbau</b></summary>
+
+<br>
+
+Hinzufügen und Umbauen sind fundamental verschiedene Operationen. Beim Hinzufügen (neuer Skill, neue Datei) reicht vorwärts denken: "Was muss ich erstellen?" Beim Umbau (Entfernen, Umbenennen, Verantwortlichkeit verschieben) ist Rückwärts-Suche Pflicht: "Was konsumiert das, was ich gerade ändere?"
+
+Jedes Team bekommt diese Regel in seiner CLAUDE.md:
+
+> Vor dem ersten Edit bei strukturellen Änderungen: `grep -r` nach allen Konsumenten des Geänderten. Erst dann editieren.
+
+Nicht jedes Problem braucht einen neuen Skill. Manchmal fehlt dem Agent nur der Auslöser im richtigen Moment -- dann reicht ein Bedingungssatz in CLAUDE.md statt eines neuen Workflows.
+
+</details>
+
+<details>
+<summary><b>Das Selbstentwicklungs-Paradox</b></summary>
+
+<br>
 
 Ein KI-Agent kann sich weiterentwickeln: neues Wissen lernen, neue Skills bauen, bestehende Teams auditieren. Aber er kann nicht zuverlässig prüfen, ob er seine eigenen Regeln einhält. Seine Prüfwerkzeuge haben dieselben blinden Flecken wie er selbst.
 
@@ -121,64 +198,74 @@ Die Lösung: `/reflect` wurde um einen Prinzip-Konsistenz-Check erweitert. Er ex
 
 Mehr dazu: [`knowledge/self-evolution-paradox.md`](knowledge/self-evolution-paradox.md)
 
-## Benutzung
+</details>
 
-### Starten
+<details>
+<summary><b>Dispatches im Detail</b></summary>
 
-```bash
-project-builder main     # Architektur-Orchestrator (Status, Dispatches, Infrastruktur)
-project-builder create   # Agent-Team bauen -- Neubau oder Umbau
+<br>
+
+Wenn `/learn` eine Quelle verarbeitet, kann das Wissen für mehrere Teams relevant sein. Das Dispatch-System routet Erkenntnisse an die richtigen Empfänger:
+
+```
+Quelle → /learn → Routing:
+  KI-Architektur    → eigene knowledge/
+  Für anderes Team  → [team-repo]/dispatches/inbox/
+  Beides            → knowledge/ + Dispatch
 ```
 
-Zwei Rollen, ein Agent. `main` ist der Standardmodus. `create` startet direkt im Team-Building-Workflow und fragt ob Neubau oder Umbau.
+Dispatch-Dateien leben in den Team-Repos, nicht zentral im Project Builder. Bei Sessionstart prüft der Ziel-Agent, ob neue Dispatches in seinem `dispatches/inbox/` vorliegen, und verarbeitet sie automatisch. `dispatches.md` im PB-Repo ist ein Write-Only-Log (was wurde wann wohin gesendet).
 
-### Natürliche Sprache
+**Routing-Tabelle:** `teams.md` definiert pro Team die Wissensgebiete. `/learn` matcht Erkenntnisse gegen diese Gebiete und routet automatisch.
 
-Sag dem Agent was du willst -- er wählt den richtigen Skill:
+</details>
 
-- *"Bau mir ein Team für mein Coaching-Business"*
-- *"Prüf mal das Team in ~/mein-projekt"*
-- *"Setz die Empfehlungen um"*
-- *"Dieser Text klingt zu sehr nach KI"*
+<details>
+<summary><b>Multi-Server im Detail</b></summary>
 
-### Befehle
+<br>
 
-| Befehl | Wann |
-|--------|------|
-| `/track` | Projektstatus aktualisieren |
-| `/commit` | Sessionende: /track + commit + push in einem Schritt |
-| `/learn` | Neue Wissensquellen integrieren |
-| `/cross-commit` | Änderungen in verwalteten Repos committen + pushen |
+Git ist das einzige Sync-Medium -- kein SSH-Sync, keine geteilten Dateisysteme.
 
-`/commit` ist der Standard für Sessionende. Pusht nur wenn ein Remote existiert -- ohne Remote wird nur lokal committed.
-
-## Setup
-
-```bash
-git clone https://github.com/andyon2/project-builder-public.git ~/project-builder
-cd ~/project-builder
-./scripts/setup.sh
+```
+Server A:  Sessionstart → git pull → arbeiten → commit → push
+Server B:  Sessionstart → git pull → arbeiten → commit → push
 ```
 
-Das Setup-Script:
-1. Erstellt deine Instanz-Dateien aus Templates (CLAUDE.md, teams.md, dispatches.md)
-2. Fragt ob du Notion-Integration willst (optional)
-3. Richtet den globalen `project-builder`-Shortcut ein (optional)
-4. Installiert Python-Abhängigkeiten für YouTube-Transcripts (optional)
+Jeder Agent ist selbst dafür verantwortlich, bei Sessionstart den neuesten Stand zu holen.
 
-Danach: `project-builder main` starten.
+**Server-Gruppen.** `teams.md` hat eine `Server`-Spalte, die jedes Team einem Server zuordnet. Eine Server-Gruppen-Tabelle mappt Umgebungswerte auf SSH-Hosts. Skills wie `/learn` und `/cross-commit` filtern automatisch: Jede PB-Instanz verarbeitet nur Teams auf ihrem eigenen Server.
 
-### Eigene Instanz konfigurieren
+**Umgebungserkennung.** Eine Datei `~/.environment` (z.B. `local`, `server`, `staging`) sagt dem Agent, wo er läuft. Einmal pro Maschine gesetzt, außerhalb aller Repos.
 
-Nach dem Setup:
-1. **teams.md** -- Trage deine Agent-Teams ein (Name, Pfad, Wissensgebiete)
-2. **config/notion.md** -- Falls Notion: `notion-cli config init` einrichten, IDs in config/notion.md eintragen
+**Mehrere PB-Instanzen.** Das PB-Repo kann auf mehreren Servern geklont werden. Alle Instanzen teilen `knowledge/` und Skills über Git. Die `teams.md`-Einträge bestimmen, welche Instanz welche Teams managed. Keine Konflikte, solange jedes Team genau einem Server zugeordnet ist.
 
-Weitere Integrationen können unter `config/` als Markdown-Datei angelegt werden. Der Agent erkennt sie automatisch.
+</details>
 
-### Instanz-Dateien
+<details>
+<summary><b>Cross-Commit im Detail</b></summary>
 
-Nach dem Setup entstehen Instanz-Dateien (CLAUDE.md, teams.md, project-status.md, config/), die deine persönliche Konfiguration enthalten. Diese stehen in `.gitignore` und werden nicht ins Public Repo committed. Bei Nutzung auf mehreren Rechnern: Separates privates Repo oder Sync-Ordner.
+<br>
+
+`/cross-commit` iteriert über alle verwalteten Repos (aus `teams.md`), committet ausstehende Änderungen und pusht. Nützlich wenn der Project Builder Dateien in mehreren fremden Repos geändert hat (z.B. nach einem Dispatch-Rollout oder einem Framework-Update).
+
+Wichtig: Committet nur bereits getrackte Dateien (`git add -u`). Neue Dateien müssen vorher explizit `git add`-ed werden -- der Agent warnt, wenn untracked Files vorliegen.
+
+</details>
+
+---
+
+## Für Fortgeschrittene
+
+### Architect-Modus
+
+```bash
+project-builder architect   # An der PB-Architektur selbst arbeiten
+```
+
+Der Architect-Modus ist für PB-Maintainer die am Framework selbst arbeiten: Wissens-Pipeline pflegen, Selbstanalyse mit `/reflect`, Prinzip-Konsistenz prüfen, Skills und Templates weiterentwickeln. Nicht für den normalen Betrieb gedacht.
+
+---
 
 ## Projektstruktur
 
@@ -193,12 +280,11 @@ project-builder/
   reference/                   # On-Demand-Referenzmaterial
   sources/inbox/               # Neue Wissensquellen hier ablegen
   scripts/
-    project-builder            # Starter-Script (main|create)
-    starter-main.md            # Sessionstart-Routine: Orchestrator
-    starter-create.md          # Sessionstart-Routine: Team-Building (Neubau + Umbau)
+    project-builder            # Starter-Script
+    learn/fetch-transcript.py  # YouTube-Transcript-Fetcher (mit Whisper-Fallback)
     notion/notion-cli.py       # Notion API CLI (ersetzt MCP Server)
     notion/notion-cli          # Shell-Wrapper (Symlink: ~/.local/bin/notion-cli)
-  .claude/skills/              # 15 Skills
+  .claude/skills/              # 14 Skills
   .claude/hooks/               # Deterministische Sicherheits-Hooks
 ```
 
@@ -216,45 +302,23 @@ Verdichtetes Wissen zu KI-Agent-Architektur. Wird über `/learn` aktualisiert, n
 | `self-evolution-paradox.md` | Selbstentwicklung vs. Selbstkonsistenz |
 | `widersprueche.md` | Offene Konflikte zwischen Quellen |
 
-## Für Fortgeschrittene
+---
 
-### Multi-Server-Architektur
+## Konfiguration
 
-Agent-Teams können auf mehreren Servern laufen. Git ist das einzige Sync-Medium -- kein SSH-Sync, keine geteilten Dateisysteme.
+### Eigene Instanz einrichten
 
-```
-Server A:  Sessionstart → git pull → arbeiten → commit → push
-Server B:  Sessionstart → git pull → arbeiten → commit → push
-```
+Nach dem Setup:
+1. **teams.md** -- Trage deine Agent-Teams ein (Name, Pfad, Wissensgebiete)
+2. **config/notion.md** -- Falls Notion: `notion-cli config init` einrichten, IDs in config/notion.md eintragen
 
-Jeder Agent ist selbst dafür verantwortlich, bei Sessionstart den neuesten Stand zu holen.
+Weitere Integrationen können unter `config/` als Markdown-Datei angelegt werden. Der Agent erkennt sie automatisch.
 
-**Server-Gruppen.** `teams.md` hat eine `Server`-Spalte, die jedes Team einem Server zuordnet. Eine Server-Gruppen-Tabelle mappt Umgebungswerte auf SSH-Hosts. Skills wie `/learn` und `/cross-commit` filtern automatisch: Jede PB-Instanz verarbeitet nur Teams auf ihrem eigenen Server.
+### Instanz-Dateien
 
-**Umgebungserkennung.** Eine Datei `~/.environment` (z.B. `local`, `server`, `staging`) sagt dem Agent, wo er läuft. Einmal pro Maschine gesetzt, außerhalb aller Repos.
+Nach dem Setup entstehen Instanz-Dateien (CLAUDE.md, teams.md, project-status.md, config/), die deine persönliche Konfiguration enthalten. Diese stehen in `.gitignore` und werden nicht ins Public Repo committed. Bei Nutzung auf mehreren Rechnern: Separates privates Repo oder Sync-Ordner.
 
-**Mehrere PB-Instanzen.** Das PB-Repo kann auf mehreren Servern geklont werden. Alle Instanzen teilen `knowledge/` und Skills über Git. Die `teams.md`-Einträge bestimmen, welche Instanz welche Teams managed. Keine Konflikte, solange jedes Team genau einem Server zugeordnet ist.
-
-### Dezentrale Dispatches: Wissen zwischen Teams routen
-
-Wenn `/learn` eine Quelle verarbeitet, kann das Wissen für mehrere Teams relevant sein. Das Dispatch-System routet Erkenntnisse an die richtigen Empfänger:
-
-```
-Quelle → /learn → Routing:
-  KI-Architektur    → eigene knowledge/
-  Für anderes Team  → [team-repo]/dispatches/inbox/
-  Beides            → knowledge/ + Dispatch
-```
-
-Dispatch-Dateien leben in den Team-Repos, nicht zentral im Project Builder. Bei Sessionstart prüft der Ziel-Agent, ob neue Dispatches in seinem `dispatches/inbox/` vorliegen, und verarbeitet sie automatisch. `dispatches.md` im PB-Repo ist ein Write-Only-Log (was wurde wann wohin gesendet).
-
-**Routing-Tabelle:** `teams.md` definiert pro Team die Wissensgebiete. `/learn` matcht Erkenntnisse gegen diese Gebiete und routet automatisch.
-
-### Cross-Commit: Mehrere Repos gleichzeitig verwalten
-
-`/cross-commit` iteriert über alle verwalteten Repos (aus `teams.md`), committet ausstehende Änderungen und pusht. Nützlich wenn der Project Builder Dateien in mehreren fremden Repos geändert hat (z.B. nach einem Dispatch-Rollout oder einem Framework-Update).
-
-Wichtig: Committet nur bereits getrackte Dateien (`git add -u`). Neue Dateien müssen vorher explizit `git add`-ed werden -- der Agent warnt, wenn untracked Files vorliegen.
+---
 
 ## Lizenz
 
